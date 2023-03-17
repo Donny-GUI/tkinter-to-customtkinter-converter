@@ -19,7 +19,7 @@ Please see https://github.com/TomSchimansky/CustomTkinter
 
 # Getting Started
 
-## windows users
+### Windows Users
 
 ```Powershell
 git clone https://github.com/Donny-GUI/tkinter-to-customtkinter-converter.git
@@ -27,7 +27,7 @@ cd tkinter-to-customtkinter-converter
 python tk_to_ctk.py <target> <optional output filename>
 ```
 
-## Unix/Linux Users
+### Unix/Linux Users
 
 
 ```Bash
