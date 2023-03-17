@@ -35,3 +35,10 @@ git clone https://github.com/Donny-GUI/tkinter-to-customtkinter-converter.git
 cd tkinter-to-customtkinter-converter
 python3 tk_to_ctk.py <target> <optional output filename>
 ```
+
+
+# Using the Graphical User Interface
+
+```
+python tk_to_ctk.py -g
+```
