@@ -9,9 +9,11 @@
 # tkinter-to-customtkinter-converter
 Convert your tkinter scripts and guis to custom tkinter with this command line tool. Comes with graphical user interface option  and can determine programming paradigm and import  structure to keep consistency across files
 
-# Warning
+# Updates April 14 2023
 
-Not calibrated for ttk yet. Going to get that done here soon.
+- Now supports ttk by default
+- General syntax improvements in source code
+- General performance improvements
 
 # Thank you!
 
