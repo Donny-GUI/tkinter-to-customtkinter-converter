@@ -14,6 +14,13 @@ Convert your tkinter scripts and guis to custom tkinter with this command line t
 - Now supports ttk by default
 - General syntax improvements in source code
 - General performance improvements
+- now converts all widget background_color to bg_color as specified in the property exception in customtkinter
+- converts all widget foreground_color to fg_color as specified in the the property exception in customtkinter
+
+
+# Coming Up Next
+
+- tkinter.ListBox conversion to customtkinter class ScrollableFrame or "ScrollableFrameBox/ScrollableCheckBox/ScrollableSwitchBox/ScrollableLabelBox" 
 
 # Thank you!
 
