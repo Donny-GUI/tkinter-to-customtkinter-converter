@@ -27,6 +27,23 @@ from tkinter import filedialog
 #
 # ======================================================================
 
+# ======================================================================
+# Updates Log
+#
+# [4/14/2023]  -  ttk is now supported by default
+#       new data class - TtkRegex
+#       new data class - TtkChanger
+#       new function   - class_based_ttk 
+#       new function   - function_based_ttk 
+#       new function   - determine_if_program_uses_ttk
+#       new data class - MiscellaneousRegex
+#       new function   - ttk_prescan
+#
+# [4/14/2023]  -  General syntax Fixes
+#       filename parse - integrated os.sep into filename determination.
+#       path parse     - integrated os.sep into path determination.
+#
+# ======================================================================
 
 
 @dataclasses.dataclass(slots=True)
@@ -77,6 +94,8 @@ class Change2:
     image = ("Image", "CTkImage")
     toplevel = ("Toplevel", "CTkTopLevel")
     regex_config = (".config", ".configure")
+    background_color_fix = (", background_color=", ", bg_color=")
+    foreground_color_fix = (", foreground_color=", "fg_color=")
     all = [label, button, combo, textbox, progressbar, frame, option_menu, radiobutton, segemented_button, switch, image, slider, regex_config, checkbox, input_dialog]
     tks = [x[0] for x in all]
     ctks = [x[1] for x in all]
@@ -136,52 +155,67 @@ class Type1Regex:
     all = [button, canvas, checkbutton, entry, frame, label, listbox, menu, menubutton, message, optionmenu, panedwindow, radiobutton, scale, text, toplevel, spinbox, labelframe]
 
 
-def length_difference(string1: str, string2: str) -> int:
-    """determines the length difference of two strings as a positive integer
+@dataclasses.dataclass(slots=True)
+class TtkRegex:
+    import_statement_1 = re.compile(r"\bfrom tkinter import ttk\b")
+    package     = re.compile(r"ttk.")
+    button      = re.compile(r'\bttk.Button\b')
+    canvas      = re.compile(r'\bttk.Canvas\b')
+    combo       = re.compile(r'\bttk.Combobox\b')
+    checkbutton = re.compile(r'\bttk.Checkbutton\b')
+    entry       = re.compile(r'\bttk.Entry\b')
+    frame       = re.compile(r'\bttk.Frame\b')
+    label       = re.compile(r'\bttk.Label\b')
+    listbox     = re.compile(r'\bttk.Listbox\b')
+    menu        = re.compile(r'\bttk.Menu\b')
+    menubutton  = re.compile(r'\bttk.Menubutton\b')
+    message     = re.compile(r'\bttk.Message\b')
+    optionmenu  = re.compile(r'\bttk.OptionMenu\b')
+    panedwindow = re.compile(r'\bttk.PanedWindow\b')
+    radiobutton = re.compile(r'\bttk.Radiobutton\b')
+    scale       = re.compile(r'\bttk.Scale\b')
+    scrollbar   = re.compile(r'\bttk.Scrollbar\b')
+    text        = re.compile(r'\bttk.Text\b')
+    toplevel    = re.compile(r'\bttk.Toplevel\b')
+    spinbox     = re.compile(r'\bttk.Spinbox\b')
+    labelframe  = re.compile(r'\bttk.LabelFrame\b')
+    image       = re.compile(r'\bttk.Image\b')
+    all = [button, canvas, checkbutton, entry, frame, label, listbox, menu, menubutton, message, optionmenu, panedwindow, radiobutton, scale, text, toplevel, spinbox, labelframe]
 
-    Args:
-        string1 (str): any string
-        string2 (str): any string
 
-    Returns:
-        int: the difference in string lengths as a positive integer
-    """
-    length1 = len(string1)
-    length2 = len(string2)
-    if length1 > length2:
-        return length1 - length2
-    elif length2 > length1:
-        return length2 - length1
-    else:
-        return 0
+@dataclasses.dataclass(slots=True)
+class TtkChanger:
+    import_statement = ("from tkinter import ttk", "import customtkinter as ctk")
+    ttk = ("ttk.Tk()", "ctk.CTk()")
+    ttk2 = ("ttk.Tk, ctk.CTk") 
+    label = ("ttk.Label", "ctk.CTkLabel")
+    button = ("ttk.Button", "ctk.CTkButton")
+    entry = ("ttk.Entry", "ctk.CTkEntry")
+    combo = ("ttk.Combobox", "ctk.CTkCombobox")
+    textbox = ("ttk.Textbox", "ctk.CTkTextbox")
+    progressbar = ("ttk.Progressbar", "ctk.CTkProgressbar")
+    frame = ("ttk.Frame", "ctk.CTkFrame")
+    option_menu = ("ttk.OptionMenu", "ctk.CTkOptionMenu")
+    radiobutton = ("ttk.Radiobutton", "ctk.CTkRadioButton")
+    segemented_button = ("ttk.SegmentedButton", "ctk.CTkSegmentedButton")
+    checkbox = ("ttk.CheckBox", "ctk.CTkCheckBox")
+    input_dialog = ("ttk.InputDialog", "ctk.CTkInputDialog")
+    slider = ("ttk.Slider", "ctk.CTkSlider")
+    switch = ("ttk.Switch", "ctk.CTkSwitch")
+    image = ("ttk.Image", "ctk.CTkImage")
+    toplevel = ("ttk.Toplevel", "ctk.CTkTopLevel")
+    regex_config = (".config", ".configure")
+    background_color_fix = (", background_color=", ", bg_color=")
+    foreground_color_fix = (", foreground_color=", "fg_color=")
+    all = [import_statement, ttk, ttk2, label, button, entry, combo, textbox, progressbar, frame, option_menu, radiobutton, switch, image, slider, regex_config, background_color_fix, foreground_color_fix, foreground_color_fix]
+    tks = [x[0] for x in all]
+    ctks = [x[1] for x in all]
 
-def longer_than(string1: str, string2: str) -> bool:
-    """Determines if the first string is longer than the second string
-
-    Args:
-        string1 (str): any string
-        string2 (str): any string
-
-    Returns:
-        bool: Returns True if the first string is longer than the second string, else False
-    """
-    if len(string1) > len(string2):
-        return True
-    return False
-
-def same_length(string1: str, string2: str) -> bool:
-    """Determine if two strings have the same length
-
-    Args:
-        string1 (str): any string
-        string2 (str): any string
-
-    Returns:
-        bool: True if the strings have the same length, else False
-    """
-    if len(string1) == len(string2):
-        return True
-    return False
+@dataclasses.dataclass(slots=True)
+class MiscellaneousRegex:
+    background_color_1 = re.compile(r'\bbackground_color=')
+    background_color_2 = re.compile(r'\bbackground_color =')
+      
 
 def file_to_lines(tk_file_path: str) -> list[str]:
     """Read a file and return a list of lines with no newline characters
@@ -338,6 +372,85 @@ def determine_import_type(lines: list[str]) -> str:
     
     # Panic
     return "Unknown"
+
+def determine_if_program_uses_ttk(lines: list[str]) -> bool:
+    """Determine if the given lines contain from tkinter import ttk
+
+    Args:
+        lines (list[str]): program lines
+
+    Returns:
+        bool: True if the given lines contain from tkinter import ttk
+    """
+    for line in lines:
+        match = re.search(pattern=TtkRegex.import_statement_1, string=line)
+        if match:
+            return True 
+    return False
+
+
+def function_based_ttk(lines: list[str]) -> list[str]:
+    regex = TtkRegex
+    changer = Change2
+    patterns = [
+        regex.button, regex.label, regex.frame, 
+        regex.entry, regex.radiobutton, regex.checkbutton, 
+        regex.optionmenu, regex.combo, regex.toplevel,
+        regex.image
+    ]
+    changes = [
+        changer.button[1], changer.label[1], changer.frame[1], 
+        changer.entry[1], changer.radiobutton[1], changer.checkbox[1], 
+        changer.option_menu[1], changer.combo[1], changer.toplevel[1],
+        changer.image[1]
+    ]
+    converted_lines = []
+    for line in lines:
+        my_line = line
+        for index, pattern in enumerate(patterns):
+            match = re.search(pattern, my_line)
+            if match:
+                start_index = match.start()
+                end_index = match.end()
+                new_line = my_line[:start_index] + changes[index] + my_line[end_index+1:]
+                converted_lines.append(new_line)
+                break
+            elif match is None:
+                new_line = my_line
+        converted_lines.append(new_line)
+    return converted_lines
+
+
+def class_based_ttk(lines: list[str]) -> list[str]:
+    regex = TtkRegex
+    changer = TtkChanger
+    patterns = [
+        regex.button, regex.label, regex.frame, 
+        regex.entry, regex.radiobutton, regex.checkbutton, 
+        regex.optionmenu, regex.combo, regex.toplevel,
+        regex.image
+    ]
+    changes = [
+        changer.button[1], changer.label[1], changer.frame[1], 
+        changer.entry[1], changer.radiobutton[1], changer.checkbox[1], 
+        changer.option_menu[1], changer.combo[1], changer.toplevel[1],
+        changer.image[1]
+    ]
+    converted_lines = []
+    for line in lines:
+        my_line = line
+        for index, pattern in enumerate(patterns):
+            match = re.search(pattern, my_line)
+            if match:
+                start_index = match.start()
+                end_index = match.end()
+                new_line = my_line[:start_index] + changes[index] + my_line[end_index+1:]
+                converted_lines.append(new_line)
+                break
+            elif match is None:
+                new_line = my_line
+        converted_lines.append(new_line)
+    return converted_lines
 
 def class_based_2(lines: list[str]) -> list[str]:
     regex = Type2Regex
@@ -611,6 +724,28 @@ def write_new_file(lines: list[str], file_name: str) -> str:
             f.write(f"{line}\n")
     return file_name
 
+
+def ttk_prescan(lines: list[str], tag: tuple[str: str]) -> list[str]:
+    """ scan the program lines for ttk evidence, if present, use the tag 
+    to identify the paradigm and then repair the program lines, return the 
+    new lines. 
+
+    Args:
+        lines (list[str]): tkinter program lines
+        tag (tuple[str, str]): paradigm and type tuple tags
+
+    Returns:
+        list[str]: new repaired list of python program lines 
+    """
+    check_for_ttk = determine_if_program_uses_ttk(lines)
+    if check_for_ttk == True:
+        if tag[0] == "Class Based":
+            return class_based_ttk(lines)
+        elif tag[0] != "Class Based":
+            return function_based_ttk(lines)
+    elif check_for_ttk == False:
+        return lines
+
 def convert_tk_to_ctk(tk_file_path: str, ctk_file_path: str) -> str:
     """Converts a tkinter file to a ctk file if possible
 
@@ -622,14 +757,19 @@ def convert_tk_to_ctk(tk_file_path: str, ctk_file_path: str) -> str:
         str: ctk file path
     """
     
+    # get program lines
     lines    = file_to_lines(tk_file_path=tk_file_path)
+    # determine paradigm and structure
     tag      = determine_mode_of_operation(lines=lines)
     function = match_tag(tag=tag)
-    
+    # exit if panic on paradigm or structure    
     if function == exit:
         function()
-        
-    new_lines = function(lines)
+    # take care of ttk first to prevent tk scans from failing
+    post_scan_lines = ttk_prescan(lines, tag)
+    # apply the paradigm and structure fixes
+    new_lines = function(post_scan_lines)
+    
     write_new_file(lines=new_lines, file_name=ctk_file_path)
     
     print("New CTK file created ", ctk_file_path)
@@ -676,7 +816,7 @@ def gui():
     gui_version.root.mainloop()
 
 def main():
-    filename = __file__.split("\\")[-1] if sys.platform == "win32" else __file__.split("/")[-1]
+    filename = __file__.split(os.sep)[-1]
     if "-g" in sys.argv:
         gui()
         exit()
@@ -700,8 +840,8 @@ def main():
         print("please specify the file to convert")
         exit()
         
-    path_parts = target.split("\\") if sys.platform == "win32" else target.split("/")
-    path = "\\".join(path_parts[:-1]) if sys.platform == "win32" else "/".join(path_parts[:-1])
+    path_parts = target.split(os.sep)
+    path = str(os.sep).join(path_parts[:-1])
     
     try:
         output_file = args[1]
