@@ -9,6 +9,8 @@
 # tkinter-to-customtkinter-converter
 Convert your tkinter scripts and guis to custom tkinter with this command line tool. Comes with graphical user interface option  and can determine programming paradigm and import  structure to keep consistency across files
 
+please, please, please if you experience a bug or bad operations please submit them to me so i can fix it immediatly. i dont have hundreds of guis to test this on.
+
 # Updates April 14 2023
 
 - Now supports ttk by default
@@ -21,6 +23,7 @@ Convert your tkinter scripts and guis to custom tkinter with this command line t
 # Coming Up Next
 
 - tkinter.ListBox conversion to customtkinter class ScrollableFrame or "ScrollableFrameBox/ScrollableCheckBox/ScrollableSwitchBox/ScrollableLabelBox" 
+- possible CTkMessageBox addition from Akascape
 
 # Thank you!
 
