@@ -69,7 +69,11 @@ class Change:
     image = ("tk.Image", "ctk.CTkImage")
     toplevel = ("tk.Toplevel", "ctk.CTkTopLevel")
     regex_config = (".config", ".configure")
-    all = [import_statement, tk, tk2, label, button, entry, combo, textbox, progressbar, frame, option_menu, radiobutton, switch, image, slider, regex_config]
+    background_color_fix_1 = (", background_color=", "bg_color=")
+    foreground_color_fix_1 = (", foreground_color=", "fg_color=")
+    background_color_fix_2 = (", background_color = ", "bg_color = ")
+    foreground_color_fix_2 = (", foreground_color = ", "fg_color = ")
+    all = [import_statement, tk, tk2, label, button, entry, combo, textbox, progressbar, frame, option_menu, radiobutton, switch, image, slider, regex_config, background_color_fix_1, background_color_fix_2, foreground_color_fix_1, foreground_color_fix_2]
     tks = [x[0] for x in all]
     ctks = [x[1] for x in all]
 
@@ -94,9 +98,11 @@ class Change2:
     image = ("Image", "CTkImage")
     toplevel = ("Toplevel", "CTkTopLevel")
     regex_config = (".config", ".configure")
-    background_color_fix = (", background_color=", ", bg_color=")
-    foreground_color_fix = (", foreground_color=", "fg_color=")
-    all = [label, button, combo, textbox, progressbar, frame, option_menu, radiobutton, segemented_button, switch, image, slider, regex_config, checkbox, input_dialog]
+    background_color_fix_1 = (", background_color=", "bg_color=")
+    foreground_color_fix_1 = (", foreground_color=", "fg_color=")
+    background_color_fix_2 = (", background_color = ", "bg_color = ")
+    foreground_color_fix_2 = (", foreground_color = ", "fg_color = ")
+    all = [import_statement, label, button, entry, combo, textbox, progressbar, frame, option_menu, radiobutton, switch, image, slider, regex_config, background_color_fix_1, background_color_fix_2, foreground_color_fix_1, foreground_color_fix_2]
     tks = [x[0] for x in all]
     ctks = [x[1] for x in all]
 
@@ -205,17 +211,29 @@ class TtkChanger:
     image = ("ttk.Image", "ctk.CTkImage")
     toplevel = ("ttk.Toplevel", "ctk.CTkTopLevel")
     regex_config = (".config", ".configure")
-    background_color_fix = (", background_color=", ", bg_color=")
-    foreground_color_fix = (", foreground_color=", "fg_color=")
-    all = [import_statement, ttk, ttk2, label, button, entry, combo, textbox, progressbar, frame, option_menu, radiobutton, switch, image, slider, regex_config, background_color_fix, foreground_color_fix, foreground_color_fix]
+    background_color_fix_1 = (", background_color=", "bg_color=")
+    foreground_color_fix_1 = (", foreground_color=", "fg_color=")
+    background_color_fix_2 = (", background_color = ", "bg_color = ")
+    foreground_color_fix_2 = (", foreground_color = ", "fg_color = ")
+    all = [import_statement, ttk, ttk2, label, button, entry, combo, textbox, progressbar, frame, option_menu, radiobutton, switch, image, slider, regex_config, background_color_fix_1, background_color_fix_2, foreground_color_fix_1, foreground_color_fix_2]
     tks = [x[0] for x in all]
     ctks = [x[1] for x in all]
+
 
 @dataclasses.dataclass(slots=True)
 class MiscellaneousRegex:
     background_color_1 = re.compile(r'\bbackground_color=')
     background_color_2 = re.compile(r'\bbackground_color =')
-      
+    foreground_color_1 = re.compile(r'\bforeground_color=\b')
+    foreground_color_2 = re.compile(r'\bforeground_color =\b')
+    
+@dataclasses.dataclass(slots=True)
+class MiscellaneousFixes:
+    background_color_1 = ("background_color=", "bg_color=")
+    background_color_2 = ("background_color = ", "bg_color = ")
+    foreground_color_1 = ("foreground_color=", "fg_color=")
+    foreground_color_2 = ("foreground_color = ", "fg_color = ")
+
 
 def file_to_lines(tk_file_path: str) -> list[str]:
     """Read a file and return a list of lines with no newline characters
