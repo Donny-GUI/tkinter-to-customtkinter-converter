@@ -562,7 +562,6 @@ def class_based_1(lines: list[str]) -> list[str]:
     converted_lines.insert(0, "import customtkinter as ctk")
     return converted_lines
 
-
 def class_based_multiple(lines: list[str]):
     """ classed based and multi-paradigm detected
 
