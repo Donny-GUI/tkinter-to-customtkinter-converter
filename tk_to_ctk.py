@@ -5,19 +5,20 @@ import sys
 import tkinter as tk
 from tkinter import filedialog
 
+
 # ======================================================================
 # User:       Donny-GUI
-# Author:     Donald Guiles 
+# Author:     Donald Guiles
 # Date:       March 13 2023
-#   
+#  
 # Description:
 #       Converts a tkinter python3 script into a python3 customtkinter
-#       script. Determines the programming paradigm and import type 
-#       and converts the script into a customtkinter script with the 
-#       programming paradigm and import type originally specified. 
-# 
+#       script. Determines the programming paradigm and import type
+#       and converts the script into a customtkinter script with the
+#       programming paradigm and import type originally specified.
+#
 # License:    MIT License
-#   Free to use and distribute under the MIT License for any purpose.   
+#   Free to use and distribute under the MIT License for any purpose.  
 #   Give credit where credit is due. If not, you'll be cursed with
 #   the ghost of java programming for 100 years.
 #
@@ -33,8 +34,8 @@ from tkinter import filedialog
 # [4/14/2023]  -  ttk is now supported by default
 #       new data class - TtkRegex
 #       new data class - TtkChanger
-#       new function   - class_based_ttk 
-#       new function   - function_based_ttk 
+#       new function   - class_based_ttk
+#       new function   - function_based_ttk
 #       new function   - determine_if_program_uses_ttk
 #       new data class - MiscellaneousRegex
 #       new function   - ttk_prescan
@@ -51,7 +52,7 @@ class Change:
     import_statement = ("import tkinter as tk", "import customtkinter as ctk")
     tk = ("tk.Tk()", "ctk.CTk()")
     tk3 = ("Tk", "CTk")
-    tk2 = ("tk.Tk, ctk.CTk") 
+    tk2 = ("tk.Tk, ctk.CTk")
     label = ("tk.Label", "ctk.CTkLabel")
     button = ("tk.Button", "ctk.CTkButton")
     entry = ("tk.Entry", "ctk.CTkEntry")
@@ -193,7 +194,7 @@ class TtkRegex:
 class TtkChanger:
     import_statement = ("from tkinter import ttk", "import customtkinter as ctk")
     ttk = ("ttk.Tk()", "ctk.CTk()")
-    ttk2 = ("ttk.Tk, ctk.CTk") 
+    ttk2 = ("ttk.Tk, ctk.CTk")
     label = ("ttk.Label", "ctk.CTkLabel")
     button = ("ttk.Button", "ctk.CTkButton")
     entry = ("ttk.Entry", "ctk.CTkEntry")
@@ -222,13 +223,17 @@ class TtkChanger:
 
 @dataclasses.dataclass(slots=True)
 class MiscellaneousRegex:
+    """ misc regex strings that i have came across
+    """
     background_color_1 = re.compile(r'\bbackground_color=')
     background_color_2 = re.compile(r'\bbackground_color =')
     foreground_color_1 = re.compile(r'\bforeground_color=\b')
-    foreground_color_2 = re.compile(r'\bforeground_color =\b')
-    
+    foreground_color_2 = re.compile(r'\bforeground_color =\b') 
+
+
 @dataclasses.dataclass(slots=True)
 class MiscellaneousFixes:
+    """Misc fixes"""
     background_color_1 = ("background_color=", "bg_color=")
     background_color_2 = ("background_color = ", "bg_color = ")
     foreground_color_1 = ("foreground_color=", "fg_color=")
@@ -277,8 +282,7 @@ def determine_if_class_based(lines: list[str]) -> bool:
 
     Returns:
         bool: True if the list of lines is a class based file, else False
-    """
-    
+    """ 
     for line in lines:
         if str(line).startswith("class "):
             if str(line).endswith("Tk):"):
@@ -328,7 +332,7 @@ def determine_if_function_based(lines: list[str]) -> bool:
         lines (list[str]): list of lines from a file
 
     Returns:
-        bool: True if the list of lines is a function based file, else False 
+        bool: True if the list of lines is a function based file, else False
     """
     for line in lines:
         if str(line).startswith("\troot = Tk()"):
@@ -357,37 +361,31 @@ def determine_import_type(lines: list[str]) -> str:
 
     Returns:
         str: one of four possible import types: 'Type 1', 'Type 2', 'Multiple Types', or 'Unknown'
-    """
-    
+    """ 
     # declare variables
     type1 = "import tkinter as tk"
     type2 = "from tkinter import *"
     lines_length = len(lines)
-    types = []
-    
+    types = [] 
     # shorten lines for processing if necessary
     if lines_length > 10:
         search = lines[:11]
     else:
-        search = lines
-    
+        search = lines 
     # iterate through lines looking for import statements
     for line in search:
         if str(line).startswith(type1):
             types.append("Type 1")
         if str(line).startswith(type2):
-            types.append("Type 2")
-    
+            types.append("Type 2") 
     # determine if there are multiple types
     types = list(set(types))
-    types_length = len(types)
-    
+    types_length = len(types) 
     # return if there are multiple types, or just one type
     if types_length > 1:
         return "Multiple Types"
     elif types_length == 1:
-        return types[0]
-    
+        return types[0] 
     # Panic
     return "Unknown"
 
@@ -403,22 +401,29 @@ def determine_if_program_uses_ttk(lines: list[str]) -> bool:
     for line in lines:
         match = re.search(pattern=TtkRegex.import_statement_1, string=line)
         if match:
-            return True 
+            return True
     return False
 
-
 def function_based_ttk(lines: list[str]) -> list[str]:
+    """ function based paradigm detected and ttk
+
+    Args:
+        lines (list[str]): list of strings from the python file
+
+    Returns:
+        list[str]: fixed lines from the python file
+    """
     regex = TtkRegex
     changer = Change2
     patterns = [
-        regex.button, regex.label, regex.frame, 
-        regex.entry, regex.radiobutton, regex.checkbutton, 
+        regex.button, regex.label, regex.frame,
+        regex.entry, regex.radiobutton, regex.checkbutton,
         regex.optionmenu, regex.combo, regex.toplevel,
         regex.image
     ]
     changes = [
-        changer.button[1], changer.label[1], changer.frame[1], 
-        changer.entry[1], changer.radiobutton[1], changer.checkbox[1], 
+        changer.button[1], changer.label[1], changer.frame[1],
+        changer.entry[1], changer.radiobutton[1], changer.checkbox[1],
         changer.option_menu[1], changer.combo[1], changer.toplevel[1],
         changer.image[1]
     ]
@@ -438,19 +443,26 @@ def function_based_ttk(lines: list[str]) -> list[str]:
         converted_lines.append(new_line)
     return converted_lines
 
-
 def class_based_ttk(lines: list[str]) -> list[str]:
+    """ class based paradigm detected type 1
+
+    Args:
+        lines (list[str]): list of strings from the python file
+
+    Returns:
+        list[str]: fixed lines from the python file
+    """
     regex = TtkRegex
     changer = TtkChanger
     patterns = [
-        regex.button, regex.label, regex.frame, 
-        regex.entry, regex.radiobutton, regex.checkbutton, 
+        regex.button, regex.label, regex.frame,
+        regex.entry, regex.radiobutton, regex.checkbutton,
         regex.optionmenu, regex.combo, regex.toplevel,
         regex.image
     ]
     changes = [
-        changer.button[1], changer.label[1], changer.frame[1], 
-        changer.entry[1], changer.radiobutton[1], changer.checkbox[1], 
+        changer.button[1], changer.label[1], changer.frame[1],
+        changer.entry[1], changer.radiobutton[1], changer.checkbox[1],
         changer.option_menu[1], changer.combo[1], changer.toplevel[1],
         changer.image[1]
     ]
@@ -471,22 +483,29 @@ def class_based_ttk(lines: list[str]) -> list[str]:
     return converted_lines
 
 def class_based_2(lines: list[str]) -> list[str]:
+    """ class based paradigm detected type 2
+
+    Args:
+        lines (list[str]): list of strings from the python file
+
+    Returns:
+        list[str]: fixed lines from the python file
+    """
     regex = Type2Regex
     changer = Change2
     patterns = [
-        regex.button, regex.label, regex.frame, 
-        regex.entry, regex.radiobutton, regex.checkbutton, 
+        regex.button, regex.label, regex.frame,
+        regex.entry, regex.radiobutton, regex.checkbutton,
         regex.optionmenu, regex.combo, regex.toplevel,
         regex.image
     ]
     changes = [
-        changer.button[1], changer.label[1], changer.frame[1], 
-        changer.entry[1], changer.radiobutton[1], changer.checkbox[1], 
+        changer.button[1], changer.label[1], changer.frame[1],
+        changer.entry[1], changer.radiobutton[1], changer.checkbox[1],
         changer.option_menu[1], changer.combo[1], changer.toplevel[1],
         changer.image[1]
     ]
     converted_lines = []
-    
     for line in lines:
         my_line = line
         for index, pattern in enumerate(patterns):
@@ -502,24 +521,31 @@ def class_based_2(lines: list[str]) -> list[str]:
         converted_lines.append(new_line)
     converted_lines.insert(0, "from customtkinter import *")
     return converted_lines
-    
+
 def class_based_1(lines: list[str]) -> list[str]:
+    """ class based paradigm detected type 1
+
+    Args:
+        lines (list[str]): list of strings from the python file
+
+    Returns:
+        list[str]: fixed lines from the python file
+    """
     regex = Type1Regex
     changer = Change
     patterns = [
-        regex.button, regex.label, regex.frame, 
-        regex.entry, regex.radiobutton, regex.checkbutton, 
+        regex.button, regex.label, regex.frame,
+        regex.entry, regex.radiobutton, regex.checkbutton,
         regex.optionmenu, regex.combo, regex.toplevel,
         regex.image
     ]
     changes = [
-        changer.button[1], changer.label[1], changer.frame[1], 
-        changer.entry[1], changer.radiobutton[1], changer.checkbox[1], 
+        changer.button[1], changer.label[1], changer.frame[1],
+        changer.entry[1], changer.radiobutton[1], changer.checkbox[1],
         changer.option_menu[1], changer.combo[1], changer.toplevel[1],
         changer.image[1]
     ]
-    converted_lines = []
-    
+    converted_lines = [] 
     for line in lines:
         my_line = line
         for index, pattern in enumerate(patterns):
@@ -537,28 +563,43 @@ def class_based_1(lines: list[str]) -> list[str]:
     return converted_lines
 
 
-def class_based_multiple(lines):
+def class_based_multiple(lines: list[str]):
+    """ classed based and multi-paradigm detected
+
+    Args:
+        lines (list[str]): list of lines from the py file
+
+    Returns:
+        list[str]: list of lines from the py file
+    """
     first_iteration = class_based_1(lines)
     second_iteration = class_based_2(first_iteration)
     return second_iteration
 
 def function_based_2(lines) -> list[str]:
+    """ function based paradigm, type 2
+
+    Args:
+        lines (list[str]): lines from the python file
+
+    Returns:
+        list[str]: fixed lines from the python file
+    """
     regex = Type2Regex
     changer = Change2
     patterns = [
-        regex.button, regex.label, regex.frame, 
-        regex.entry, regex.radiobutton, regex.checkbutton, 
+        regex.button, regex.label, regex.frame,
+        regex.entry, regex.radiobutton, regex.checkbutton,
         regex.optionmenu, regex.combo, regex.toplevel,
         regex.image
     ]
     changes = [
-        changer.button[1], changer.label[1], changer.frame[1], 
-        changer.entry[1], changer.radiobutton[1], changer.checkbox[1], 
+        changer.button[1], changer.label[1], changer.frame[1],
+        changer.entry[1], changer.radiobutton[1], changer.checkbox[1],
         changer.option_menu[1], changer.combo[1], changer.toplevel[1],
         changer.image[1]
     ]
-    converted_lines = []
-    
+    converted_lines = [] 
     for line in lines:
         my_line = line
         for index, pattern in enumerate(patterns):
@@ -576,22 +617,29 @@ def function_based_2(lines) -> list[str]:
     return converted_lines
 
 def function_based_1(lines: list[str]) -> list[str]:
+    """ function based python file is detected
+
+    Args:
+        lines (list[str]): lines from the python file
+
+    Returns:
+        list[str]: fixed lines from the python file
+    """
     regex = Type1Regex
     changer = Change
     patterns = [
-        regex.button, regex.label, regex.frame, 
-        regex.entry, regex.radiobutton, regex.checkbutton, 
+        regex.button, regex.label, regex.frame,
+        regex.entry, regex.radiobutton, regex.checkbutton,
         regex.optionmenu, regex.combo, regex.toplevel,
         regex.image
     ]
     changes = [
-        changer.button[1], changer.label[1], changer.frame[1], 
-        changer.entry[1], changer.radiobutton[1], changer.checkbox[1], 
+        changer.button[1], changer.label[1], changer.frame[1],
+        changer.entry[1], changer.radiobutton[1], changer.checkbox[1],
         changer.option_menu[1], changer.combo[1], changer.toplevel[1],
         changer.image[1]
     ]
-    converted_lines = []
-    
+    converted_lines = [] 
     for line in lines:
         my_line = line
         for index, pattern in enumerate(patterns):
@@ -602,34 +650,49 @@ def function_based_1(lines: list[str]) -> list[str]:
                 new_line = my_line[:start_index] + changes[index] + my_line[end_index:]
                 converted_lines.append(new_line)
                 break
-            elif match is None:
+            if match is None:
                 new_line = my_line
         converted_lines.append(new_line)
     converted_lines.insert(0, "import customtkinter as ctk")
     return converted_lines
 
 def function_based_multiple(lines):
+    """ the file is function based and has multi paradigms
+
+    Args:
+        lines (list[str]): lines from the py file
+
+    Returns:
+        list[str]: fixed lines from the py file
+    """
     first_iteration = function_based_1(lines)
     second_iteration = function_based_2(first_iteration)
     return second_iteration
 
 def void_main_2(lines: list[str]) -> list[str]:
+    """ void main type 2 detected
+
+    Args:
+        lines (list[str]): list of lines from the file
+
+    Returns:
+        list[str]: fixed lines from the file
+    """
     regex = Type2Regex
     changer = Change2
     patterns = [
-        regex.button, regex.label, regex.frame, 
-        regex.entry, regex.radiobutton, regex.checkbutton, 
+        regex.button, regex.label, regex.frame,
+        regex.entry, regex.radiobutton, regex.checkbutton,
         regex.optionmenu, regex.combo, regex.toplevel,
         regex.image
     ]
     changes = [
-        changer.button[1], changer.label[1], changer.frame[1], 
-        changer.entry[1], changer.radiobutton[1], changer.checkbox[1], 
+        changer.button[1], changer.label[1], changer.frame[1],
+        changer.entry[1], changer.radiobutton[1], changer.checkbox[1],
         changer.option_menu[1], changer.combo[1], changer.toplevel[1],
         changer.image[1]
     ]
-    converted_lines = []
-    
+    converted_lines = [] 
     for line in lines:
         my_line = line
         for index, pattern in enumerate(patterns):
@@ -647,22 +710,29 @@ def void_main_2(lines: list[str]) -> list[str]:
     return converted_lines
 
 def void_main_1(lines: list[str]) -> list[str]:
+    """ if filetype is void main style
+
+    Args:
+        lines (list[str]): lines from the file
+
+    Returns:
+        list[str]: fixed lines
+    """
     regex = Type1Regex
     changer = Change
     patterns = [
-        regex.button, regex.label, regex.frame, 
-        regex.entry, regex.radiobutton, regex.checkbutton, 
+        regex.button, regex.label, regex.frame,
+        regex.entry, regex.radiobutton, regex.checkbutton,
         regex.optionmenu, regex.combo, regex.toplevel,
         regex.image
     ]
     changes = [
-        changer.button[1], changer.label[1], changer.frame[1], 
-        changer.entry[1], changer.radiobutton[1], changer.checkbox[1], 
+        changer.button[1], changer.label[1], changer.frame[1],
+        changer.entry[1], changer.radiobutton[1], changer.checkbox[1],
         changer.option_menu[1], changer.combo[1], changer.toplevel[1],
         changer.image[1]
     ]
-    converted_lines = []
-    
+    converted_lines = [] 
     for line in lines:
         my_line = line
         for index, pattern in enumerate(patterns):
@@ -679,7 +749,15 @@ def void_main_1(lines: list[str]) -> list[str]:
     converted_lines.insert(0, "import customtkinter as ctk")
     return converted_lines
 
-def void_main_multiple(lines):
+def void_main_multiple(lines: list[str]) -> list[str]:
+    """ multi-paradigm but void main is present
+
+    Args:
+        lines (list[str]): list of lines from the python file
+
+    Returns:
+        list[str]: fixed lines from the py file
+    """
     first_iteration = void_main_1(lines)
     second_iteration = void_main_2(first_iteration)
     return second_iteration
@@ -698,7 +776,7 @@ def determine_mode_of_operation(lines: list[str]) -> tuple[str, str]:
     import_structure = determine_import_type(lines)
     tag = (structure, import_structure)
     return tag
-    
+
 def match_tag(tag: tuple[str, str]) -> any:
     """Match the tuple of string structure and import type to a function
 
@@ -708,21 +786,32 @@ def match_tag(tag: tuple[str, str]) -> any:
     Returns:
         any: function to call
     """
-    if tag[0] == "Unknown": return exit
-    if tag[1] == "Unknown": return exit
+    if tag[0] == "Unknown":
+         return exit
+    if tag[1] == "Unknown":
+         return exit
     match tag:
-        case ("Class Based", "Type 2"):            file = class_based_2
-        case ("Class Based", "Type 1"):            file = class_based_1
-        case ("Function Based", "Type 2"):         file = function_based_2
-        case ("Function Based", "Type 1"):         file = function_based_1
-        case ("Void Main", "Type 2"):              file = void_main_2
-        case ("Void Main", "Type 1"):              file = void_main_1
-        case ("Class Based", "Multiple Types"):    file = class_based_multiple
-        case ("Function Based", "Multiple Types"): file = function_based_multiple
-        case ("Void Main", "Multiple Types"):      file = void_main_multiple
+        case ("Class Based", "Type 2"):
+            file = class_based_2
+        case ("Class Based", "Type 1"):
+            file = class_based_1
+        case ("Function Based", "Type 2"):
+            file = function_based_2
+        case ("Function Based", "Type 1"):
+            file = function_based_1
+        case ("Void Main", "Type 2"):
+            file = void_main_2
+        case ("Void Main", "Type 1"):
+            file = void_main_1
+        case ("Class Based", "Multiple Types"):
+            file = class_based_multiple
+        case ("Function Based", "Multiple Types"):
+            file = function_based_multiple
+        case ("Void Main", "Multiple Types"):
+            file = void_main_multiple
         case other:
             print("Unknown Structures")
-            return exit
+            return sys.exit
     return file
 
 def write_new_file(lines: list[str], file_name: str) -> str:
@@ -737,31 +826,31 @@ def write_new_file(lines: list[str], file_name: str) -> str:
     """
     if not file_name.endswith(".py"):
         file_name = file_name + ".py"
-    with open(file_name, "w") as f:
+    with open(file_name, "w", encoding='utf-8') as f:
         for line in lines:
             f.write(f"{line}\n")
     return file_name
 
 
 def ttk_prescan(lines: list[str], tag: tuple[str: str]) -> list[str]:
-    """ scan the program lines for ttk evidence, if present, use the tag 
-    to identify the paradigm and then repair the program lines, return the 
-    new lines. 
+    """ scan the program lines for ttk evidence, if present, use the tag
+    to identify the paradigm and then repair the program lines, return the
+    new lines.
 
     Args:
         lines (list[str]): tkinter program lines
         tag (tuple[str, str]): paradigm and type tuple tags
 
     Returns:
-        list[str]: new repaired list of python program lines 
+        list[str]: new repaired list of python program lines
     """
     check_for_ttk = determine_if_program_uses_ttk(lines)
-    if check_for_ttk == True:
+    if check_for_ttk is True:
         if tag[0] == "Class Based":
             return class_based_ttk(lines)
-        elif tag[0] != "Class Based":
+        else:
             return function_based_ttk(lines)
-    elif check_for_ttk == False:
+    elif check_for_ttk is False:
         return lines
 
 def convert_tk_to_ctk(tk_file_path: str, ctk_file_path: str) -> str:
@@ -773,30 +862,31 @@ def convert_tk_to_ctk(tk_file_path: str, ctk_file_path: str) -> str:
 
     Returns:
         str: ctk file path
-    """
-    
+    """ 
     # get program lines
     lines    = file_to_lines(tk_file_path=tk_file_path)
     # determine paradigm and structure
     tag      = determine_mode_of_operation(lines=lines)
     function = match_tag(tag=tag)
-    # exit if panic on paradigm or structure    
+    # exit if panic on paradigm or structure
     if function == exit:
         function()
     # take care of ttk first to prevent tk scans from failing
     post_scan_lines = ttk_prescan(lines, tag)
     # apply the paradigm and structure fixes
     new_lines = function(post_scan_lines)
-    
     write_new_file(lines=new_lines, file_name=ctk_file_path)
-    
     print("New CTK file created ", ctk_file_path)
-    
-    
+
+
 class TkinterGUI:
+    """ Gui class
+    """
     def __init__(self):
+        """ Initialize the gui
+        """
         self.root = tk.Tk()
-        self.root.title("tkinter to customtkinter converter") 
+        self.root.title("tkinter to customtkinter converter")
 
         # create widgets
         self.file_path_entry = tk.Entry(self.root, width=50)
@@ -818,59 +908,64 @@ class TkinterGUI:
         self.exit_button = tk.Button(self.root, text="Exit", command=self.root.quit)
         self.exit_button.grid(row=3, column=1, padx=5, pady=5)
 
-    def browse_file(self):
+    def browse_file(self) -> None:
+        """ Browse event
+        """
         file_path = filedialog.askopenfilename()
         self.file_path_entry.delete(0, tk.END)
         self.file_path_entry.insert(0, file_path)
 
-    def submit(self):
+    def submit(self) -> None:
+        """ submit event
+        """
         file_path = self.file_path_entry.get()
         output_file_path = self.output_file_entry.get()
         convert_tk_to_ctk(file_path, output_file_path)
-        exit()
+        sys.exit(0)
 
 def gui():
+    """ Gui entry point
+    """
     gui_version = TkinterGUI()
     gui_version.root.mainloop()
 
 def main():
-    filename = __file__.split(os.sep)[-1]
+    """ Application entry point
+    """
+    filename = __file__.rsplit(os.sep, maxsplit=1)[-1]
     if "-g" in sys.argv:
         gui()
-        exit()
-    
+        sys.exit(0) 
     if "-h" in sys.argv:
         print("Tkinter to customtkinter converter\n")
         print(f"Usage: python {filename} <path/to/tkfile> <ctkfile_output_filename>")
         print("options:\n\t -g use the graphical interface\n\t -h help")
-        exit()
-    
+        sys.exit(0)
     try:
         args = sys.argv[1:]
     except IndexError:
         print(f"Usage: python {filename} <tkfile> <ctkfile_output_filename>")
         print("please specify the file to convert")
-        exit()
+        sys.exit()
     try:
         target = args[0]
     except IndexError:
         print(f"Usage: python {filename} <tkfile> <ctkfile_output_filename>")
         print("please specify the file to convert")
-        exit()
-        
+        sys.exit(0)
+
     path_parts = target.split(os.sep)
     path = str(os.sep).join(path_parts[:-1])
-    
+
     try:
         output_file = args[1]
         output_path = os.path.join(path, output_file)
     except IndexError:
         output_file = "custom_" + path_parts[-1]
         output_path = os.path.join(path, output_file)
-    
     convert_tk_to_ctk(target, output_path)
-    
-    
+
+
 if __name__ == "__main__":
     main()
-    
+
