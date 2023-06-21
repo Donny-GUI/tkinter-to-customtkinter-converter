@@ -10,7 +10,7 @@ from tkinter import filedialog
 # User:       Donny-GUI
 # Author:     Donald Guiles
 # Date:       March 13 2023
-#  
+#
 # Description:
 #       Converts a tkinter python3 script into a python3 customtkinter
 #       script. Determines the programming paradigm and import type
@@ -18,7 +18,7 @@ from tkinter import filedialog
 #       programming paradigm and import type originally specified.
 #
 # License:    MIT License
-#   Free to use and distribute under the MIT License for any purpose.  
+#   Free to use and distribute under the MIT License for any purpose.
 #   Give credit where credit is due. If not, you'll be cursed with
 #   the ghost of java programming for 100 years.
 #
@@ -228,7 +228,7 @@ class MiscellaneousRegex:
     background_color_1 = re.compile(r'\bbackground_color=')
     background_color_2 = re.compile(r'\bbackground_color =')
     foreground_color_1 = re.compile(r'\bforeground_color=\b')
-    foreground_color_2 = re.compile(r'\bforeground_color =\b') 
+    foreground_color_2 = re.compile(r'\bforeground_color =\b')
 
 
 @dataclasses.dataclass(slots=True)
@@ -265,11 +265,11 @@ def determine_file_structure(lines: list[str]) -> str:
     Returns:
         str: one of four possible file structures: Class Based, Void Main, Function Based, or Unknown
     """
-    if determine_if_class_based(lines) == True:
+    if determine_if_class_based(lines) is True:
         return "Class Based"
-    elif determine_if_void_main(lines) == True:
+    elif determine_if_void_main(lines) is True:
         return "Void Main"
-    elif determine_if_function_based(lines) == True:
+    elif determine_if_function_based(lines) is True:
         return "Function Based"
     else:
         return "Unknown Structure"
@@ -598,7 +598,7 @@ def function_based_2(lines) -> list[str]:
         changer.option_menu[1], changer.combo[1], changer.toplevel[1],
         changer.image[1]
     ]
-    converted_lines = [] 
+    converted_lines = []
     for line in lines:
         my_line = line
         for index, pattern in enumerate(patterns):
@@ -847,10 +847,8 @@ def ttk_prescan(lines: list[str], tag: tuple[str: str]) -> list[str]:
     if check_for_ttk is True:
         if tag[0] == "Class Based":
             return class_based_ttk(lines)
-        else:
-            return function_based_ttk(lines)
-    elif check_for_ttk is False:
-        return lines
+        return function_based_ttk(lines)
+    return lines
 
 def convert_tk_to_ctk(tk_file_path: str, ctk_file_path: str) -> str:
     """Converts a tkinter file to a ctk file if possible
@@ -875,7 +873,7 @@ def convert_tk_to_ctk(tk_file_path: str, ctk_file_path: str) -> str:
     # apply the paradigm and structure fixes
     new_lines = function(post_scan_lines)
     write_new_file(lines=new_lines, file_name=ctk_file_path)
-    print("New CTK file created ", ctk_file_path)
+    #print("New CTK file created ", ctk_file_path)
 
 
 class TkinterGUI:
