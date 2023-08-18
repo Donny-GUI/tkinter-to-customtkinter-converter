@@ -179,6 +179,41 @@ class WidgetReplacer:
     def add_constant(self, constant):
         self.constants.append(constant)
 
+
+def replace_config_with_configure(file_path):
+    with open(file_path, "r") as file:
+        content = file.read()
+
+    modified_content = re.sub(r'\.config\(', '.configure(', content)
+
+    with open(file_path, "w") as file:
+        file.write(modified_content)
+
+def replace_bg_with_bg_color_in_file(file_path):
+    with open(file_path, "r") as file:
+        content = file.read()
+    cont = content.replace(", bg=", ", bg_color=").replace(", bg =", ", bg_color =")
+    with open(file_path, "w") as file:
+        file.write(cont)
+
+def replace_fg_with_fg_color_in_file(file_path):
+    with open(file_path, "r") as file:
+        content = file.read()
+    cont = content.replace(", fg=", ", fg_color=").replace(", fg =", ", fg_color =")
+    with open(file_path, "w") as file:
+        file.write(cont)
+
+def replace_meta_in_file(file_path):
+    with open(file_path, "r") as file:
+        content = file.read()
+    cont = content
+    for index, widget in enumerate(tkinter_widgets):
+        cont = cont.replace(f"({widget}):",f"(ctk.{ctk_widgets[index]}):")
+    cont = cont.replace("(Tk):", "(ctk.CTk):")
+    cont = cont.replace("Tk()", "ctk.CTk()")
+    with open(file_path, "w") as file:
+        file.write(cont)
+         
 def class_based_3(input, output):
 # Define a list of standard Tkinter widget names and constants to replace
 
@@ -197,21 +232,24 @@ def class_based_3(input, output):
         "Text",
         "Toplevel",
     ]
-
-    replacer = WidgetReplacer(input, output)
+    
+    wr = WidgetReplacer(input, output)
     for widget in tkinter_widgets:
         ctk_widget = f"ctk.CTk{widget}"
-        replacer.add_findable(f"{widget}, ", f"")
-        replacer.add_findable(f"{widget},", f"{ctk_widget},")
-        replacer.add_findable(f" = {widget}(", f" = {ctk_widget}(")
-        replacer.add_findable(f"={widget}(", f"={ctk_widget}(")
-        replacer.add_findable(f": {widget} ", f": {ctk_widget} ")
-        replacer.add_findable(f":{widget},", f":{ctk_widget},")
-        replacer.add_findable(f":{widget}", f":{ctk_widget}")
+        wr.add_findable(f"{widget}, ", f"")
+        wr.add_findable(f"{widget},", f"{ctk_widget},")
+        wr.add_findable(f" = {widget}(", f" = {ctk_widget}(")
+        wr.add_findable(f"={widget}(", f"={ctk_widget}(")
+        wr.add_findable(f": {widget} ", f": {ctk_widget} ")
+        wr.add_findable(f":{widget},", f":{ctk_widget},")
+        wr.add_findable(f":{widget}", f":{ctk_widget}")
 
-    replacer.replace_widgets()
-    replacer.double_check()
-
+    wr.replace_widgets()
+    wr.double_check()
+    replace_config_with_configure(output)
+    replace_bg_with_bg_color_in_file(output)
+    replace_fg_with_fg_color_in_file(output)
+    replace_meta_in_file(output)
     exit()
 
 
