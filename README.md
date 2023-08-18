@@ -53,8 +53,3 @@ python3 tk_to_ctk.py <target> <target2> <target3> ....
 ```
 
 
-# Using the Graphical User Interface
-
-```
-python tk_to_ctk.py -g
-```
