@@ -30,7 +30,10 @@ from tkinter import filedialog
 
 # ======================================================================
 # Updates Log
-#
+# [8/18/2023]  -  new class based 3 function and widget replacer class 
+#       new class  Widget Replacer
+#       new function     class_based_3
+#       now supports constants.
 # [4/14/2023]  -  ttk is now supported by default
 #       new data class - TtkRegex
 #       new data class - TtkChanger
@@ -45,6 +48,166 @@ from tkinter import filedialog
 #       path parse     - integrated os.sep into path determination.
 #
 # ======================================================================
+
+
+
+class WidgetReplacer:
+    tkinter_constants = [
+    "ACTIVE",
+    "ALL",
+    "ANCHOR",
+    "ARC",
+    "BASELINE",
+    "BEVEL",
+    "BOTH",
+    "BOTTOM",
+    "BROWSE",
+    "BUTT",
+    "CASCADE",
+    "CENTER",
+    "CHAR",
+    "CHECKBUTTON",
+    "CHORD",
+    "COMMAND",
+    "DISABLED",
+    "E",
+    "END",
+    "EW",
+    "EXCEPTION",
+    "EXTENDED",
+    "FALSE",
+    "FIRST",
+    "FLAT",
+    "GROOVE",
+    "HIDDEN",
+    "HORIZONTAL",
+    "INSERT",
+    "INSIDE",
+    "LAST",
+    "LEFT",
+    "MITER",
+    "MULTIPLE",
+    "N",
+    "NE",
+    "NO",
+    "NONE",
+    "NORMAL",
+    "NS",
+    "NSEW",
+    "NW",
+    "OFF",
+    "ON",
+    "OUTSIDE",
+    "PAGES",
+    "PIESLICE",
+    "PROJECTING",
+    "RADIOBUTTON",
+    "RAISED",
+    "READABLE",
+    "RIDGE",
+    "RIGHT",
+    "ROUND",
+    "S",
+    "SCROLL",
+    "SE",
+    "SEL",
+    "SEL_FIRST",
+    "SEL_LAST",
+    "SEPARATOR",
+    "SINGLE",
+    "SOLID",
+    "SUNKEN",
+    "SW",
+    "Synchronous",
+    "SystemButton",
+    "Text",
+    "TOP",
+    "TRUE",
+    "UNITS",
+    "VERTICAL",
+    "W",
+    "WORD",
+    "WRITABLE",
+    "X",
+    "Y",
+    ]
+    def __init__(self, source, output):
+        self.source = source
+        self.output = output
+        self.findables = {}
+        self.constants = []
+        self.used_constants = []
+        
+    def add_findable(self, original, replacement):
+        self.findables[re.escape(original)] = replacement
+
+    def replace_widgets(self):
+        with open(self.source, "r") as f:
+            script_content = f.read()
+        out= ""
+        for onst in self.tkinter_constants:
+            if re.search(onst, script_content):
+                self.constants.append(onst)
+
+        for original, replacement in self.findables.items():
+            pattern = r'\b{}\b'.format(original)
+            script_content = re.sub(pattern, replacement, script_content)
+
+        with open(self.output, "w") as f:
+            f.write(script_content)
+    
+
+    def double_check(self):
+        with open(self.output, "r") as f:
+            script_content = f.readlines()
+        
+        out = "import customtkinter as ctk\nfrom customtkinter import "
+        for constant in self.constants:
+            out+=f"{constant}, "
+        out+="\n"
+        
+        with open(self.output, "w") as f:
+            f.write(out)
+            for line in script_content:
+                f.write(line)
+
+    def add_constant(self, constant):
+        self.constants.append(constant)
+
+def class_based_3(input, output):
+# Define a list of standard Tkinter widget names and constants to replace
+
+    tkinter_widgets = [
+        "Button",
+        "Canvas",
+        "Checkbutton",
+        "Entry",
+        "Frame",
+        "Label",
+        "Menubutton",
+        "Message",
+        "Radiobutton",
+        "Scale",
+        "Scrollbar",
+        "Text",
+        "Toplevel",
+    ]
+
+    replacer = WidgetReplacer(input, output)
+    for widget in tkinter_widgets:
+        ctk_widget = f"ctk.CTk{widget}"
+        replacer.add_findable(f"{widget}, ", f"")
+        replacer.add_findable(f"{widget},", f"{ctk_widget},")
+        replacer.add_findable(f" = {widget}(", f" = {ctk_widget}(")
+        replacer.add_findable(f"={widget}(", f"={ctk_widget}(")
+        replacer.add_findable(f": {widget} ", f": {ctk_widget} ")
+        replacer.add_findable(f":{widget},", f":{ctk_widget},")
+        replacer.add_findable(f":{widget}", f":{ctk_widget}")
+
+    replacer.replace_widgets()
+    replacer.double_check()
+
+    exit()
 
 
 @dataclasses.dataclass(slots=True)
@@ -786,9 +949,9 @@ def match_tag(tag: tuple[str, str]) -> any:
         any: function to call
     """
     if tag[0] == "Unknown":
-         return exit
+        return class_based_3
     if tag[1] == "Unknown":
-         return exit
+        return class_based_3
     match tag:
         case ("Class Based", "Type 2"):
             file = class_based_2
@@ -868,6 +1031,7 @@ def convert_tk_to_ctk(tk_file_path: str, ctk_file_path: str) -> str:
     # exit if panic on paradigm or structure
     if function == exit:
         function()
+    elif function == class_based_3(tk_file_path, ctk_file_path)
     # take care of ttk first to prevent tk scans from failing
     post_scan_lines = ttk_prescan(lines, tag)
     # apply the paradigm and structure fixes
