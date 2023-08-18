@@ -162,7 +162,12 @@ class WidgetReplacer:
             script_content = f.readlines()
         
         out = "import customtkinter as ctk\nfrom customtkinter import "
-        for constant in self.constants:
+        m = len(self.constants) -1
+        for index, constant in enumerate(self.constants):
+            if index == m:
+                out+=f"{constant}"
+            else:    
+                out+=f"{constant}, "
             out+=f"{constant}, "
         out+="\n"
         
