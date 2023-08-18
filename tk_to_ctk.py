@@ -232,7 +232,6 @@ def class_based_3(input, output):
         "Text",
         "Toplevel",
     ]
-    
     wr = WidgetReplacer(input, output)
     for widget in tkinter_widgets:
         ctk_widget = f"ctk.CTk{widget}"
@@ -243,7 +242,28 @@ def class_based_3(input, output):
         wr.add_findable(f": {widget} ", f": {ctk_widget} ")
         wr.add_findable(f":{widget},", f":{ctk_widget},")
         wr.add_findable(f":{widget}", f":{ctk_widget}")
-
+    for widg in tkinter_widgets:
+        widget = "tk." + widg
+        ctk_widget = f"ctk.CTk{widg}"
+        wr.add_findable(f"{widget}(", f"{ctk_widget}(")
+        wr.add_findable(f"{widget}, ", f"")
+        wr.add_findable(f"{widget},", f"{ctk_widget},")
+        wr.add_findable(f" = {widget}(", f" = {ctk_widget}(")
+        wr.add_findable(f"={widget}(", f"={ctk_widget}(")
+        wr.add_findable(f": {widget} ", f": {ctk_widget} ")
+        wr.add_findable(f":{widget},", f":{ctk_widget},")
+        wr.add_findable(f":{widget}", f":{ctk_widget}")
+    for widg in tkinter_widgets:
+        widget = "ttk." + widg
+        ctk_widget = f"ctk.CTk{widg}"
+        wr.add_findable(f"{widget}(", f"{ctk_widget}(")
+        wr.add_findable(f"{widget}, ", f"")
+        wr.add_findable(f"{widget},", f"{ctk_widget},")
+        wr.add_findable(f" = {widget}(", f" = {ctk_widget}(")
+        wr.add_findable(f"={widget}(", f"={ctk_widget}(")
+        wr.add_findable(f": {widget} ", f": {ctk_widget} ")
+        wr.add_findable(f":{widget},", f":{ctk_widget},")
+        wr.add_findable(f":{widget}", f":{ctk_widget}")
     wr.replace_widgets()
     wr.double_check()
     replace_config_with_configure(output)
@@ -251,7 +271,6 @@ def class_based_3(input, output):
     replace_fg_with_fg_color_in_file(output)
     replace_meta_in_file(output)
     exit()
-
 
 @dataclasses.dataclass(slots=True)
 class Change:
