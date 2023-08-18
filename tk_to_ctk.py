@@ -1031,7 +1031,8 @@ def convert_tk_to_ctk(tk_file_path: str, ctk_file_path: str) -> str:
     # exit if panic on paradigm or structure
     if function == exit:
         function()
-    elif function == class_based_3(tk_file_path, ctk_file_path)
+    elif function == class_based_3:
+        class_based_3(tk_file_path, ctk_file_path)
     # take care of ttk first to prevent tk scans from failing
     post_scan_lines = ttk_prescan(lines, tag)
     # apply the paradigm and structure fixes
