@@ -301,6 +301,17 @@ def replace_config_with_configure(file_path:str) -> None:
         file.write(modified_content)
 
 
+def find_errs(file_path:str):
+    with open(file_path, "r", encoding="utf-8") as file:
+        lines = file.readlines()
+        retv = []
+        for line in lines:
+            l = re.sub(r'ttk.\ctk\.', 'ctk.', line)
+            retv.append(l)
+    with open(file_path, "w", encoding="utf-8") as wfile:
+        for l in retv:
+            wfile.write(l)
+
 def make_custom_tkinter(input_file:str, output_filename: str) -> None:
     with Status(f"Analyzing {input_file}...") as status:
         wr = WidgetReplacer(input_file, output_filename)
@@ -355,6 +366,7 @@ def make_custom_tkinter(input_file:str, output_filename: str) -> None:
         print("    finding meta class options...")
         replace_meta_in_file(file_path = output_filename)
         print("Success!")
+        find_errs(file_path = output_filename)
 
 
 if __name__ == "__main__":
