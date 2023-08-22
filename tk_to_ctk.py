@@ -377,8 +377,7 @@ if __name__ == "__main__":
     elif len(sys.argv) > 2:
         for arg in sys.argv[1:]:
             if os.path.exists(arg):
-                output = "customtkinter_" + os.path.basename(arg.split(".")[0]) + ".py"
+                output = "customtkinter_" + os.path.basename(os.path.splitext(arg)[0]) + ".py"
                 make_custom_tkinter(arg, output)
             else:
                 console.print(f"cant locate file {arg}")
-
