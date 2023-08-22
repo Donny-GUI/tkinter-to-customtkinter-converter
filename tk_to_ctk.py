@@ -369,7 +369,7 @@ if __name__ == "__main__":
         
     elif len(sys.argv) == 2:
         if os.path.exists(sys.argv[1]):
-            output = "customtkinter_" + os.path.basename(sys.argv[1].split(".")[0]) + ".py"
+            output = "customtkinter_" + os.path.basename(os.path.splitext(sys.argv[1])[0]) + ".py"
             make_custom_tkinter(sys.argv[1], output)
             
         else:
