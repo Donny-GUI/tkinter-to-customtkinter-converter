@@ -1,4 +1,4 @@
-import re 
+import re
 import os
 import sys
 import subprocess
@@ -98,7 +98,7 @@ class WidgetReplacer:
         self.findables = {}
         self.constants = []
         self.used_constants = []
-        
+
     def add_findable(self, original, replacement):
         self.findables[re.escape(original)] = replacement
 
@@ -116,21 +116,21 @@ class WidgetReplacer:
 
         with open(self.output, "w", errors="ignore") as f:
             f.write(script_content)
-    
+
 
     def double_check(self):
         with open(self.output, "r") as f:
             script_content = f.readlines()
-        
+
         out = "import customtkinter as ctk\nfrom customtkinter import "
         m = len(self.constants) -1
         for index, constant in enumerate(self.constants):
             if index == m:
                 out+=f"{constant}"
-            else:    
+            else:
                 out+=f"{constant}, "
         out+="\n"
-        
+
         with open(self.output, "w") as f:
             f.write(out)
             for line in script_content:
@@ -195,9 +195,9 @@ metaclass_list = [
     "(tkinter.Tk):\n",
 ]
 tkinter_widgets = [
-    "Button", "Canvas", "Checkbutton", "Entry", "Frame", "Label", 
-     "Menubutton", "Message",  "Radiobutton", 
-    "Scale", "Scrollbar", "Text", "Toplevel",  "Treeview", 
+    "Button", "Canvas", "Checkbutton", "Entry", "Frame", "Label",
+     "Menubutton", "Message",  "Radiobutton",
+    "Scale", "Scrollbar", "Text", "Toplevel",  "Treeview",
     "Frame", "Progressbar", "Separator"
 ]
 ctk_widgets = ["CTk"+x for x in tkinter_widgets]
@@ -216,10 +216,10 @@ def make_all_widget_placements():
         values.append(sublist)
     return values
 
-def find_from_tkinter_imports(filename):
-    with open(filename, 'r') as f:
-        lines = f.readlines()
-    
+def find_from_tkinter_imports(filename: str) -> list[str]:
+    with open(filename, 'r', encoding="utf-8", errors="ignore") as rfile:
+        lines = rfile.readlines()
+
     values = []
     for index, line in enumerate(lines):
         if line.startswith("from tkinter import "):
@@ -228,7 +228,6 @@ def find_from_tkinter_imports(filename):
             if "(" in value:
                 subvalue = []
                 sublines = iter(lines[index:])
-                subindex = 0
                 while True:
                     nextline = next(sublines).strip(" ")
                     if nextline.startswith(")"):
@@ -242,14 +241,14 @@ def find_from_tkinter_imports(filename):
                     values.append(val.strip(" "))
     return values
 
-def get_import_tkinter_as_tk(input):
-    lines = get_import_lines(input)
+def get_import_tkinter_as_tk(input_file:str) -> bool:
+    lines = get_import_lines(input_file)
     for line in lines:
         if line.startswith("import tkinter as tk"):
             return True
     return False
 
-def get_import_lines(filename):
+def get_import_lines(filename:str)  -> list[str]:
     retv = []
     with open(filename, 'r') as f:
         content = f.readlines()
@@ -259,7 +258,7 @@ def get_import_lines(filename):
                 retv.append(c)
     return retv
 
-def get_tkinter_import_types(filepath):
+def get_tkinter_import_types(filepath:str) -> None:
     with open(filepath, 'r') as f:
         content = f.readlines()
     for line in content:
@@ -267,60 +266,57 @@ def get_tkinter_import_types(filepath):
             if line.startswith(option):
                 pass
 
-def replace_bg_with_bg_color_in_file(file_path):
-    with open(file_path, "r") as file:
+def replace_bg_with_bg_color_in_file(file_path:str) -> None:
+    with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
         content = file.read()
     cont = content.replace(", bg=", ", bg_color=").replace(", bg =", ", bg_color =")
-    with open(file_path, "w") as file:
+    with open(file_path, "w", encoding="utf-8") as file:
         file.write(cont)
 
-def replace_fg_with_fg_color_in_file(file_path):
-    with open(file_path, "r") as file:
+def replace_fg_with_fg_color_in_file(file_path: str) -> None:
+    with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
         content = file.read()
     cont = content.replace(", fg=", ", fg_color=").replace(", fg =", ", fg_color =")
-    with open(file_path, "w") as file:
+    with open(file_path, "w", encoding="utf-8") as file:
         file.write(cont)
 
-def replace_meta_in_file(file_path):
-    with open(file_path, "r") as file:
+def replace_meta_in_file(file_path:str) -> None:
+    with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
         content = file.read()
     cont = content
     for index, widget in enumerate(tkinter_widgets):
         cont = cont.replace(f"({widget}):",f"(ctk.{ctk_widgets[index]}):")
     cont = cont.replace("(Tk):", "(ctk.CTk):")
     cont = cont.replace("Tk()", "ctk.CTk()")
-    with open(file_path, "w") as file:
+    with open(file_path, "w", encoding="utf-8") as file:
         file.write(cont)
 
-def replace_config_with_configure(file_path):
-    with open(file_path, "r") as file:
+def replace_config_with_configure(file_path:str) -> None:
+    with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
         content = file.read()
 
     modified_content = re.sub(r'\.config\(', '.configure(', content)
 
-    with open(file_path, "w") as file:
+    with open(file_path, "w", encoding="utf-8") as file:
         file.write(modified_content)
 
 
-def make_custom_tkinter(input, output):
-    with Status(f"Analyzing {input}...") as status:
-        print(f"Converting   {input} -> {output}")
-        wr = WidgetReplacer(input, output)
-        print("Adding widgets to look for...")
-        status.update(f" Widget -> ctk.CTkWidget")
+def make_custom_tkinter(input_file:str, output_filename: str) -> None:
+    with Status(f"Analyzing {input_file}...") as status:
+        wr = WidgetReplacer(input_file, output_filename)
         for widget in tkinter_widgets:
             ctk_widget = f"ctk.CTk{widget}"
             wr.add_findable(f" {widget}(", f" {ctk_widget}(")
             wr.add_findable(f"  {widget}(", f"  {ctk_widget}(")
             wr.add_findable(f"{widget}(", f"{ctk_widget}(")
-            wr.add_findable(f"{widget}, ", f"")
+            wr.add_findable(f"{widget}, ", "")
             wr.add_findable(f"{widget},", f"{ctk_widget},")
             wr.add_findable(f" = {widget}(", f" = {ctk_widget}(")
             wr.add_findable(f"={widget}(", f"={ctk_widget}(")
             wr.add_findable(f": {widget} ", f": {ctk_widget} ")
             wr.add_findable(f":{widget},", f":{ctk_widget},")
             wr.add_findable(f":{widget}", f":{ctk_widget}")
-        status.update(f"tk.Widget -> ctk.CTkWidget")
+        status.update("tk.Widget -> ctk.CTkWidget")
         for widg in tkinter_widgets:
             widget = "tk." + widg
             ctk_widget = f"ctk.CTk{widg}"
@@ -334,30 +330,30 @@ def make_custom_tkinter(input, output):
             wr.add_findable(f": {widget} ", f": {ctk_widget} ")
             wr.add_findable(f":{widget},", f":{ctk_widget},")
             wr.add_findable(f":{widget}", f":{ctk_widget}")
-        status.update(f" ttk.Widget -> ctk.CTkWidget" )
+        status.update(" ttk.Widget -> ctk.CTkWidget" )
         for widg in tkinter_widgets:
-            widget = "ttk." + widg
-            ctk_widget = f"ctk.CTk{widg}"
-            wr.add_findable(f"{widget}(", f"{ctk_widget}(")
-            wr.add_findable(f"{widget}, ", f"")
-            wr.add_findable(f"{widget},", f"{ctk_widget},")
-            wr.add_findable(f" = {widget}(", f" = {ctk_widget}(")
-            wr.add_findable(f"={widget}(", f"={ctk_widget}(")
-            wr.add_findable(f": {widget} ", f": {ctk_widget} ")
-            wr.add_findable(f":{widget},", f":{ctk_widget},")
-            wr.add_findable(f":{widget}", f":{ctk_widget}")
-        print(f"    Replacing all widgets...")
+            widget:str = "ttk." + widg
+            ctk_widget:str = f"ctk.CTk{widg}"
+            wr.add_findable("{0}(".format(widget), "{0}(".format(ctk_widget))
+            wr.add_findable("{0}, ".format(widget), "")
+            wr.add_findable(widget+",", "{0},".format(ctk_widget))
+            wr.add_findable(" = {0}(".format(widget), " = {0}(".format(ctk_widget))
+            wr.add_findable("={0}(".format(widget), "={0}(".format(ctk_widget))
+            wr.add_findable(": {0} ".format(widget), ": {0} ".format(ctk_widget))
+            wr.add_findable(":{0},".format(widget),  ":{0},".format(ctk_widget))
+            wr.add_findable(":{0}".format(widget), ":{0}".format(ctk_widget))
+        print("    Replacing all widgets...")
         wr.replace_widgets()
-        print(f"    double checking constants...")
+        print("    double checking constants...")
         wr.double_check()
-        print(f"    finding .config/.configure...")
-        replace_config_with_configure(output)
-        print(f"    finding bg/bg_color...")
-        replace_bg_with_bg_color_in_file(output)
-        print(f"    finding fg/fg_color...")
-        replace_fg_with_fg_color_in_file(output)
-        print(f"    finding meta class options...")
-        replace_meta_in_file(output)
+        print("    finding .config/.configure...")
+        replace_config_with_configure(file_path =output_filename)
+        print("    finding bg/bg_color...")
+        replace_bg_with_bg_color_in_file( file_path =output_filename)
+        print("    finding fg/fg_color...")
+        replace_fg_with_fg_color_in_file(file_path =output_filename)
+        print("    finding meta class options...")
+        replace_meta_in_file(file_path = output_filename)
         print("Success!")
 
 
@@ -366,18 +362,18 @@ if __name__ == "__main__":
     console = Console()
     if len(sys.argv) < 2:
         console.print(Panel(f"Tkinter to CustomTkinter \n\n  Usage:\n\t [dim]{__file__}[/dim]  [dim italic]target target[/dim italic]\n  Description:\n\t Convert your tkinter scripts to customtkinter scripts.", highlight="blue", title="v 1.1", title_align="left", width=80))
-        
+
     elif len(sys.argv) == 2:
         if os.path.exists(sys.argv[1]):
-            output = "customtkinter_" + str(os.path.basename(os.path.splitext(sys.argv[1])[0])) + ".py"
-            make_custom_tkinter(sys.argv[1], output)
-            
+            output_file = "customtkinter_" + str(os.path.basename(os.path.splitext(sys.argv[1])[0])) + ".py"
+            make_custom_tkinter(sys.argv[1], output_file)
+
         else:
             console.print(f"cant locate file {sys.argv[1]}")
     elif len(sys.argv) > 2:
         for arg in sys.argv[1:]:
             if os.path.exists(arg):
-                output = "customtkinter_" + str(os.path.basename(os.path.splitext(arg)[0])) + ".py"
-                make_custom_tkinter(arg, output)
+                output_file = "customtkinter_" + str(os.path.basename(os.path.splitext(arg)[0])) + ".py"
+                make_custom_tkinter(arg, output_file)
             else:
                 console.print(f"cant locate file {arg}")
