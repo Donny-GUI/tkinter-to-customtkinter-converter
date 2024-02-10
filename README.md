@@ -7,7 +7,7 @@
 
 
 # tkinter-to-customtkinter-converter
-Convert your tkinter scripts and guis to custom tkinter with this command line tool. Comes with graphical user interface option  and can determine programming paradigm and import  structure to keep consistency across files
+Convert your tkinter scripts and guis to custom tkinter with this command line tool. Can determine programming paradigm and import structure to keep consistency across files
 
 please, please, please if you experience a bug or bad operations please submit them to me so i can fix it immediatly. i dont have hundreds of guis to test this on.
 
@@ -18,7 +18,7 @@ please, please, please if you experience a bug or bad operations please submit t
 - fixed Radiobutton to RadioButton
 - No longer falsly import tk.Text
 - uses CTkSlider for tk.Scale
-- 
+
 # Updates April 14 2023
 
 - Now supports ttk by default
