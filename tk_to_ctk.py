@@ -156,7 +156,11 @@ def replace_fg_with_fg_color_in_file(file_path: str) -> None:
     with open(file_path, "w", encoding="utf-8") as file:
         file.write(cont)
 
-def replace_meta_in_file(file_path:str) -> None:
+def replace_meta_in_file(file_path: str) -> None:
+    """ 
+    Replace all the tk meta class or base classes with custom tkinter ones 
+    """
+
     with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
         content = file.read()
     cont = content.replace(r"(tk.Tk):", r"(ctk.CTk):")
@@ -178,6 +182,9 @@ def replace_config_with_configure(file_path:str) -> None:
 
 
 def find_errs(file_path:str):
+    """ 
+    Find errors in the tk-ctk psuedo code 
+    """
     with open(file_path, "r", encoding="utf-8") as file:
         lines = file.readlines()
         retv = []
@@ -267,6 +274,7 @@ def make_custom_tkinter(input_file:str, output_filename: str) -> None:
 if __name__ == "__main__":
     
     console = Console()
+    
     if len(sys.argv) < 2:
         console.print(Panel(f"Tkinter to CustomTkinter \n\n  Usage:\n\t [dim]{__file__}[/dim]  [dim italic]target target[/dim italic]\n  Description:\n\t Convert your tkinter scripts to customtkinter scripts.", highlight="blue", title="v 1.1", title_align="left", width=80))
 
