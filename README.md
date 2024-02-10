@@ -11,6 +11,16 @@ Convert your tkinter scripts and guis to custom tkinter with this command line t
 
 please, please, please if you experience a bug or bad operations please submit them to me so i can fix it immediatly. i dont have hundreds of guis to test this on.
 
+## Before
+
+![before](https://github.com/Donny-GUI/tkinter-to-customtkinter-converter/assets/108424001/900c08c2-e364-4533-bf0d-227536aae7df)
+
+
+## After
+
+![after](https://github.com/Donny-GUI/tkinter-to-customtkinter-converter/assets/108424001/4a692be9-a57e-4b8a-9061-d32eebded834)
+
+
 
 # Update Feb 9 2024
 - fixed base and meta class tkinter widgets to represent ctk ones
