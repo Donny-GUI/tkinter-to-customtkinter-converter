@@ -2,7 +2,7 @@ import re
 import os
 import sys
 import subprocess
-from util import pip_str
+from util import pip_str, python_str
 try:
     from rich.status import Status
 except:
@@ -271,12 +271,21 @@ def make_custom_tkinter(input_file:str, output_filename: str) -> None:
         print(output_filename)
 
 
+use_panel_str = f"""
+  Usage:
+    [italic][dim]{python_str} {os.path.basename(__file__)} <[italic][white][dim]Target1> <Target2> ... [/italic][/dim][/white][/italic][/dim]
+
+  Description:
+    [italic]Convert your tkinter scripts to customtkinter scripts.[/italic]
+
+"""
+
 if __name__ == "__main__":
     
     console = Console()
     
     if len(sys.argv) < 2:
-        console.print(Panel(f"Tkinter to CustomTkinter \n\n  Usage:\n\t [dim]{__file__}[/dim]  [dim italic]target target[/dim italic]\n  Description:\n\t Convert your tkinter scripts to customtkinter scripts.", highlight="blue", title="v 1.1", title_align="left", width=80))
+        console.print(Panel(use_panel_str, highlight="blue", title="[blue]Tkinter to CustomTkinter[/blue] v 1.1", title_align="left", expand=True))
 
     elif len(sys.argv) == 2:
         if os.path.exists(sys.argv[1]):

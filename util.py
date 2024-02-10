@@ -17,4 +17,5 @@ def get_operating_system() -> str:
     else:
         return "Unknown"
 
-pip_str = "pip" if platform.system() == "Windows" else "pip3"
+pip_str = "pip" if get_operating_system() == "Windows" else "pip3"
+python_str = "python" if get_operating_system() == "Windows" else "python3"
