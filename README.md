@@ -61,3 +61,19 @@ python3 tk_to_ctk.py <target> <target2> <target3> ....
 ```
 
 
+# Files
+
+## tkinter-to-customtkinter.util
+Contains utility functions and constants
+```
+get_operating_system()
+# get the name of the operating system
+pip_str
+# Literal string for using pip aka pip or pip3
+```
+
+## tkinter-to-customtkinter.widget_replacer
+Contains the WidgetReplacer class
+
+
+
