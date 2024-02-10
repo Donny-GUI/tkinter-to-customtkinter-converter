@@ -2,142 +2,18 @@ import re
 import os
 import sys
 import subprocess
+from util import pip_str
 try:
     from rich.status import Status
 except:
     print(f"rich is not installed. Installing...")
-    subprocess.run(["pip", "install", "rich"], check=True)
+    subprocess.run([pip_str, "install", "rich"], check=True)
     print(f"rich has been installed.")
 from rich.status import Status
 from rich.console import Console
+from rich.panel import Panel
+from widget_replacer import WidgetReplacer
 
-
-class WidgetReplacer:
-    tkinter_constants = [
-    "ACTIVE",
-    "ALL",
-    "ANCHOR",
-    "ARC",
-    "BASELINE",
-    "BEVEL",
-    "BOTH",
-    "BOTTOM",
-    "BROWSE",
-    "BUTT",
-    "CASCADE",
-    "CENTER",
-    "CHAR",
-    "CHECKBUTTON",
-    "CHORD",
-    "COMMAND",
-    "DISABLED",
-    "E",
-    "END",
-    "EW",
-    "EXCEPTION",
-    "EXTENDED",
-    "FALSE",
-    "FIRST",
-    "FLAT",
-    "GROOVE",
-    "HIDDEN",
-    "HORIZONTAL",
-    "INSERT",
-    "INSIDE",
-    "LAST",
-    "LEFT",
-    "MITER",
-    "MULTIPLE",
-    "N",
-    "NE",
-    "NO",
-    "NONE",
-    "NORMAL",
-    "NS",
-    "NSEW",
-    "NW",
-    "OFF",
-    "ON",
-    "OUTSIDE",
-    "PAGES",
-    "PIESLICE",
-    "PROJECTING",
-    "RADIOBUTTON",
-    "RAISED",
-    "READABLE",
-    "RIDGE",
-    "RIGHT",
-    "ROUND",
-    "S",
-    "SCROLL",
-    "SE",
-    "SEL",
-    "SEL_FIRST",
-    "SEL_LAST",
-    "SEPARATOR",
-    "SINGLE",
-    "SOLID",
-    "SUNKEN",
-    "SW",
-    "Synchronous",
-    "SystemButton",
-    "Text",
-    "TOP",
-    "TRUE",
-    "UNITS",
-    "VERTICAL",
-    "W",
-    "WORD",
-    "WRITABLE",
-    "X",
-    "Y",
-    ]
-    def __init__(self, source, output):
-        self.source = source
-        self.output = output
-        self.findables = {}
-        self.constants = []
-        self.used_constants = []
-
-    def add_findable(self, original, replacement):
-        self.findables[re.escape(original)] = replacement
-
-    def replace_widgets(self):
-        with open(self.source, "r", encoding="utf-8", errors="ignore") as f:
-            script_content = f.read()
-        out= ""
-        for onst in self.tkinter_constants:
-            if re.search(onst, script_content):
-                self.constants.append(onst)
-
-        for original, replacement in self.findables.items():
-            pattern = r'\b{}\b'.format(original)
-            script_content = re.sub(pattern, replacement, script_content)
-
-        with open(self.output, "w", errors="ignore") as f:
-            f.write(script_content)
-
-
-    def double_check(self):
-        with open(self.output, "r") as f:
-            script_content = f.readlines()
-
-        out = "import customtkinter as ctk\nfrom customtkinter import "
-        m = len(self.constants) -1
-        for index, constant in enumerate(self.constants):
-            if index == m:
-                out+=f"{constant}"
-            else:
-                out+=f"{constant}, "
-        out+="\n"
-
-        with open(self.output, "w") as f:
-            f.write(out)
-            for line in script_content:
-                f.write(line)
-
-    def add_constant(self, constant):
-        self.constants.append(constant)
 
 def class_based(input, output):
 # Define a list of standard Tkinter widget names and constants to replace
@@ -283,9 +159,9 @@ def replace_fg_with_fg_color_in_file(file_path: str) -> None:
 def replace_meta_in_file(file_path:str) -> None:
     with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
         content = file.read()
-    cont = content
+    cont = content.replace(r"(tk.Tk):", r"(ctk.CTk):")
     for index, widget in enumerate(tkinter_widgets):
-        cont = cont.replace(f"({widget}):",f"(ctk.{ctk_widgets[index]}):")
+        cont = cont.replace(f"(tk.{widget}):",f"(ctk.{ctk_widgets[index]}):")
     cont = cont.replace("(Tk):", "(ctk.CTk):")
     cont = cont.replace("Tk()", "ctk.CTk()")
     with open(file_path, "w", encoding="utf-8") as file:
@@ -305,14 +181,32 @@ def find_errs(file_path:str):
     with open(file_path, "r", encoding="utf-8") as file:
         lines = file.readlines()
         retv = []
+
         for line in lines:
-            l = re.sub(r'ttk.\ctk\.', 'ctk.', line)
-            retv.append(l)
+            l = re.sub(r'ttk.ctk.', r'ctk.', line)
+            l2 = re.sub(r'tk.ctk.', r'ctk.', l)
+            l3 = re.sub(r'.CTkText', r'.CTkTextbox', l2)
+            l4 = re.sub(r'.CTkRadiobutton', r'.CTkRadioButton', l3)
+            #CTkCheckButton
+            l5 = re.sub(r'.CTkCheckbutton', r'.CTkCheckBox', l4)
+            l6 = re.sub(r'.CTkScale', r'.CTkSlider', l5)
+            #tk.StringVar
+            l7 = l6
+            retv.append(l7)
+
     with open(file_path, "w", encoding="utf-8") as wfile:
         for l in retv:
             wfile.write(l)
 
 def make_custom_tkinter(input_file:str, output_filename: str) -> None:
+    """ 
+    create a customtkinter file from a tkinter file
+    Arguments:
+        input_file (str): the tkinter file to use
+        output_filename (str): the desired output file
+    Returns:
+        None
+    """
     with Status(f"Analyzing {input_file}...") as status:
         wr = WidgetReplacer(input_file, output_filename)
         for widget in tkinter_widgets:
@@ -367,10 +261,11 @@ def make_custom_tkinter(input_file:str, output_filename: str) -> None:
         replace_meta_in_file(file_path = output_filename)
         print("Success!")
         find_errs(file_path = output_filename)
+        print(output_filename)
 
 
 if __name__ == "__main__":
-    from rich.panel import Panel
+    
     console = Console()
     if len(sys.argv) < 2:
         console.print(Panel(f"Tkinter to CustomTkinter \n\n  Usage:\n\t [dim]{__file__}[/dim]  [dim italic]target target[/dim italic]\n  Description:\n\t Convert your tkinter scripts to customtkinter scripts.", highlight="blue", title="v 1.1", title_align="left", width=80))
