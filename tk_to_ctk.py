@@ -238,7 +238,7 @@ class AppArgs(object):
 
             if nextarg in ["help", "--help", "-h"]:
                 self.help_flag = True
-                
+
             elif nextarg in ["listbox", "--listbox", "-l"]:
                 self.listbox_flag = True
 
@@ -298,12 +298,15 @@ if __name__ == "__main__":
     console = Console()
     args = AppArgs()
 
+    if args.targets == []:
+        console.print("   You have to specify a target file...")
+        exit()
+        
     if args.not_enough:
         console.print(Panel(use_panel_str, highlight="blue", title="[blue]Tkinter to CustomTkinter[/blue] v 1.1", title_align="left", expand=True))
 
     elif args.singletarget:
-        if os.path.exists(sys.argv[1]):
-            
+        if os.path.exists(args.targets[0]):
             if args.needs_outfile:
                 output_file = "customtkinter_" + str(os.path.basename(os.path.splitext(args.targets[0])[0])) + ".py"
             else:
