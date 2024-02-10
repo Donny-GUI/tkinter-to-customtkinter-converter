@@ -7,9 +7,17 @@
 
 
 # tkinter-to-customtkinter-converter
-Convert your tkinter scripts and guis to custom tkinter with this command line tool. Comes with graphical user interface option  and can determine programming paradigm and import  structure to keep consistency across files
+Convert your tkinter scripts and guis to custom tkinter with this command line tool. Can determine programming paradigm and import structure to keep consistency across files
 
 please, please, please if you experience a bug or bad operations please submit them to me so i can fix it immediatly. i dont have hundreds of guis to test this on.
+
+
+# Update Feb 9 2024
+- fixed base and meta class tkinter widgets to represent ctk ones
+- fixed Checkbutton to CheckBox
+- fixed Radiobutton to RadioButton
+- No longer falsly import tk.Text
+- uses CTkSlider for tk.Scale
 
 # Updates April 14 2023
 
@@ -51,5 +59,21 @@ git clone https://github.com/Donny-GUI/tkinter-to-customtkinter-converter.git
 cd tkinter-to-customtkinter-converter
 python3 tk_to_ctk.py <target> <target2> <target3> ....
 ```
+
+
+# Files
+
+## tkinter-to-customtkinter.util
+Contains utility functions and constants
+```Python3
+get_operating_system()
+# get the name of the operating system
+pip_str
+# Literal string for using pip aka pip or pip3
+```
+
+## tkinter-to-customtkinter.widget_replacer
+Contains the WidgetReplacer class
+
 
 
