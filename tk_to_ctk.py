@@ -3,6 +3,7 @@ import os
 import sys
 import subprocess
 from util import pip_str, python_str
+from util import get_listbox_source, has_listbox, classes_begin_index
 try:
     from rich.status import Status
 except:
@@ -15,132 +16,13 @@ from rich.panel import Panel
 from widget_replacer import WidgetReplacer
 
 
-def class_based(input, output):
-# Define a list of standard Tkinter widget names and constants to replace
-
-    tkinter_widgets = [
-        "Button",
-        "Canvas",
-        "Checkbutton",
-        "Entry",
-        "Frame",
-        "Label",
-        "Menubutton",
-        "Message",
-        "Radiobutton",
-        "Scale",
-        "Scrollbar",
-        "Text",
-        "Toplevel",
-    ]
-
-    replacer = WidgetReplacer(input, output)
-    for widget in tkinter_widgets:
-        ctk_widget = f"ctk.CTk{widget}"
-        replacer.add_findable(f"{widget}, ", f"")
-        replacer.add_findable(f"{widget},", f"{ctk_widget},")
-        replacer.add_findable(f" = {widget}(", f" = {ctk_widget}(")
-        replacer.add_findable(f"={widget}(", f"={ctk_widget}(")
-        replacer.add_findable(f": {widget} ", f": {ctk_widget} ")
-        replacer.add_findable(f":{widget},", f":{ctk_widget},")
-        replacer.add_findable(f":{widget}", f":{ctk_widget}")
-
-    replacer.replace_widgets()
-    replacer.double_check()
-
-    exit()
-import_options = [
-    "import tkinter as tk",     # 0
-    "import tkinter", # 1
-    "from tkinter import *",    # 2
-    "from tkinter import ",     # 3
-    "import tkinter.constants", # 4
-    "import tkinter.constants as tkc" # 5
-]
-import_outcome = [
-    "import customtkinter as ctk",
-    "import customtkinter",
-    "from customtkinter import *",
-    "from customtkinter import ",
-    "import customtkinter.constants",
-    "import customtkinter.constants as ctkc"
-]
-metaclass_list = [
-    "(Tk):\n",
-    "(tk.Tk):\n",
-    "(tkinter.Tk):\n",
-]
 tkinter_widgets = [
-    "Button", "Canvas", "Checkbutton", "Entry", "Frame", "Label",
-     "Menubutton", "Message",  "Radiobutton",
+    "Button", "Canvas", "Checkbutton", "Entry", "Label",
+    "Menubutton", "Message",  "Radiobutton",
     "Scale", "Scrollbar", "Text", "Toplevel",  "Treeview",
-    "Frame", "Progressbar", "Separator"
-]
+    "Frame", "Progressbar", "Separator"]
 ctk_widgets = ["CTk"+x for x in tkinter_widgets]
-widget_placements = [
-    "    {},\n", " = {}", ": {}", " : {}", "={}", "({}):" ,"{}, ", "{},"
-]
-def replacement(replace):
-    return re.escape(replace)
 
-def make_all_widget_placements():
-    values = []
-    for widget in tkinter_widgets:
-        sublist = []
-        for placement in widget_placements:
-            sublist.append(replacement(placement.format(widget)))
-        values.append(sublist)
-    return values
-
-def find_from_tkinter_imports(filename: str) -> list[str]:
-    with open(filename, 'r', encoding="utf-8", errors="ignore") as rfile:
-        lines = rfile.readlines()
-
-    values = []
-    for index, line in enumerate(lines):
-        if line.startswith("from tkinter import "):
-            start = len("from tkinter import ")
-            value = line[start:]
-            if "(" in value:
-                subvalue = []
-                sublines = iter(lines[index:])
-                while True:
-                    nextline = next(sublines).strip(" ")
-                    if nextline.startswith(")"):
-                        break
-                    subvalue.append(nextline)
-                for v in subvalue:
-                    values.append(v)
-            else:
-                vals = value.split(",")
-                for val in vals:
-                    values.append(val.strip(" "))
-    return values
-
-def get_import_tkinter_as_tk(input_file:str) -> bool:
-    lines = get_import_lines(input_file)
-    for line in lines:
-        if line.startswith("import tkinter as tk"):
-            return True
-    return False
-
-def get_import_lines(filename:str)  -> list[str]:
-    retv = []
-    with open(filename, 'r') as f:
-        content = f.readlines()
-    for c in content:
-        for item in ["from ", "import "]:
-            if c.startswith(item):
-                retv.append(c)
-    return retv
-
-def get_tkinter_import_types(filepath:str) -> None:
-    with open(filepath, 'r') as f:
-        content = f.readlines()
-    for line in content:
-        for option in import_options:
-            if line.startswith(option):
-                pass
 
 def replace_bg_with_bg_color_in_file(file_path:str) -> None:
     with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
@@ -205,14 +87,51 @@ def find_errs(file_path:str):
         for l in retv:
             wfile.write(l)
 
-def make_custom_tkinter(input_file:str, output_filename: str) -> None:
-    """ 
-    create a customtkinter file from a tkinter file
+def rewrite_listboxes(filepath: str) -> None:
+
+    final_lines = []
+    # does the file even have listboxes?
+    if has_listbox(filepath) == True:
+
+        # get the source lines to add to for the ListBox class
+        listbox_addition = get_listbox_source()
+        # read the source lines
+        with open(filepath, "r") as r:
+            source_lines = r.readlines()
+        # determine where the classes should begin
+        class_index = classes_begin_index(source_lines)
+
+        # inject the class at the class index
+        for index, line in enumerate(source_lines):
+            if index == class_index:
+                for source_line in listbox_addition:
+                    final_lines.append(source_line)
+            final_lines.append(line)
+
+        # write the lines out
+        with open(filepath, "w") as w:
+            w.writelines(final_lines)
+        # read the new content from the class injection
+        with open(filepath, "r") as r:
+            content = r.read()
+        # substitute the listboxes for the CTkListbox
+        content1 = re.sub(r"ttk.Listbox(", r"CTkListbox(", content)
+        content2 = re.sub(r"tk.Listbox(", r"CTkListbox(", content1)
+        # write the final content
+        with open(filepath, "w") as w:
+            w.write(content2)
+
+def make_custom_tkinter(input_file:str, output_filename: str, convert_listboxes: bool=False) -> None:
+    """
+    Description: 
+        Create a customtkinter file from a tkinter file
+    
     Arguments:
         input_file (str): the tkinter file to use
         output_filename (str): the desired output file
     Returns:
         None
+
     """
     with Status(f"Analyzing {input_file}...") as status:
         wr = WidgetReplacer(input_file, output_filename)
@@ -243,6 +162,7 @@ def make_custom_tkinter(input_file:str, output_filename: str) -> None:
             wr.add_findable(f":{widget},", f":{ctk_widget},")
             wr.add_findable(f":{widget}", f":{ctk_widget}")
         status.update(" ttk.Widget -> ctk.CTkWidget" )
+
         for widg in tkinter_widgets:
             widget:str = "ttk." + widg
             ctk_widget:str = f"ctk.CTk{widg}"
@@ -254,20 +174,33 @@ def make_custom_tkinter(input_file:str, output_filename: str) -> None:
             wr.add_findable(": {0} ".format(widget), ": {0} ".format(ctk_widget))
             wr.add_findable(":{0},".format(widget),  ":{0},".format(ctk_widget))
             wr.add_findable(":{0}".format(widget), ":{0}".format(ctk_widget))
+        
         print("    Replacing all widgets...")
         wr.replace_widgets()
+        
         print("    double checking constants...")
         wr.double_check()
+
         print("    finding .config/.configure...")
         replace_config_with_configure(file_path =output_filename)
+        
         print("    finding bg/bg_color...")
         replace_bg_with_bg_color_in_file( file_path =output_filename)
+        
         print("    finding fg/fg_color...")
         replace_fg_with_fg_color_in_file(file_path =output_filename)
+        
         print("    finding meta class options...")
         replace_meta_in_file(file_path = output_filename)
-        print("Success!")
+        
         find_errs(file_path = output_filename)
+        print("Success!")
+
+        if convert_listboxes:
+            status.update(" fixing the listboxes...")
+            console.print("    Converting listboxes...")
+            rewrite_listboxes(file_path = output_filename)
+
         print(output_filename)
 
 
@@ -278,26 +211,114 @@ use_panel_str = f"""
   Description:
     [italic]Convert your tkinter scripts to customtkinter scripts.[/italic]
 
+  Options:
+    help     -h  --help         Show this help
+    listbox  -l  --listbox      Convert tkinter listboxes to customtkinter
+    outfile  -o  --outfile      Give then name of the outfile
+
 """
+
+
+class AppArgs(object):
+    def __init__(self) -> None:
+        self.arg_len = len(sys.argv)
+        self.help_flag = False
+        self.listbox_flag = False
+        self.outfile_flag = False
+
+        self.outfile_value = None
+        self.arg_iter = iter(sys.argv)
+        self.targets = []
+
+        for i in range(self.arg_len):
+
+            try:
+                nextarg = next(self.arg_iter)
+            except StopIteration:
+                break
+
+            if nextarg in ["help", "--help", "-h"]:
+                self.help_flag = True
+            elif nextarg in ["listbox", "--listbox", "-l"]:
+                self.listbox_flag = True
+            elif nextarg in ["outfile", "--outfile", "-o"]:
+
+                self.outfile_flag = True
+                try:
+                    nextarg = next(self.arg_iter)
+                    self.outfile_value = nextarg
+                except StopIteration:
+                    break
+            elif nextarg not in ["python3", "python", os.path.basename(__file__)] and nextarg.endswith(".py"):
+                self.targets.append(nextarg)
+        
+        if self.outfile_flag == True:
+            self.outfile_value = self.outfile_value.rstrip(".py")
+            self.outfile_value += ".py"
+    
+    @property 
+    def not_enough(self) -> bool:
+        if self.arg_len < 2:
+            return True
+        return False
+    
+    @property 
+    def has_targets(self) -> bool:
+        if self.targets != []:
+            return True
+        return False
+
+    @property 
+    def has_outfile(self) -> bool:
+        return self.outfile_flag
+    
+    @property
+    def needs_outfile(self) -> bool:
+        if self.outfile_flag and self.outfile_value == None:
+            return True
+        elif self.outfile_flag and self.outfile_value != None:
+            return False
+        elif self.outfile_flag == False:
+            return False
+    
+    @property 
+    def multitarget(self) -> bool:
+        return True if len(self.targets) > 1 else False
+    
+    @property
+    def singletarget(self) -> bool:
+        return True if len(self.targets) == 1 else False
+    
 
 if __name__ == "__main__":
     
     console = Console()
-    
-    if len(sys.argv) < 2:
+    args = AppArgs()
+
+    if args.not_enough:
         console.print(Panel(use_panel_str, highlight="blue", title="[blue]Tkinter to CustomTkinter[/blue] v 1.1", title_align="left", expand=True))
 
-    elif len(sys.argv) == 2:
+    elif args.singletarget:
         if os.path.exists(sys.argv[1]):
-            output_file = "customtkinter_" + str(os.path.basename(os.path.splitext(sys.argv[1])[0])) + ".py"
-            make_custom_tkinter(sys.argv[1], output_file)
+            
+            if args.needs_outfile:
+                output_file = "customtkinter_" + str(os.path.basename(os.path.splitext(args.targets[0])[0])) + ".py"
+            else:
+                output_file = args.outfile_value
+
+            make_custom_tkinter(args.targets[0], output_file, args.listbox_flag)
 
         else:
             console.print(f"cant locate file {sys.argv[1]}")
-    elif len(sys.argv) > 2:
-        for arg in sys.argv[1:]:
+    
+    elif args.multitarget:
+
+        for arg in args.targets:
+
+            if args.has_outfile:
+                console.print("[red]User Error[/red]: [italic]Cant use outfile on multiple targets. Reverting to name generator.[/italic]")
             if os.path.exists(arg):
                 output_file = "customtkinter_" + str(os.path.basename(os.path.splitext(arg)[0])) + ".py"
-                make_custom_tkinter(arg, output_file)
+                make_custom_tkinter(arg, output_file, args.listbox_flag)
             else:
                 console.print(f"cant locate file {arg}")

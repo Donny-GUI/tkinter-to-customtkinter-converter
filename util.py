@@ -19,3 +19,39 @@ def get_operating_system() -> str:
 
 pip_str = "pip" if get_operating_system() == "Windows" else "pip3"
 python_str = "python" if get_operating_system() == "Windows" else "python3"
+
+
+def classes_begin_index(lines: list[str]) -> int:
+
+    # first try to put the CTkListBox as the first Class in the class area
+    count = 0 
+    for line in lines:
+        if line.startswith("class "):
+            return count
+        count += 1
+    
+    # if there is no classes defined in the script. Find the first non import line
+    count = 0
+    for line in lines:
+        if line.startswith("import ") or line.startswith("from "):
+            count += 1
+            continue
+        else:
+            return count
+    
+    return count
+
+def get_listbox_source():
+    with open("listbox.py", "r") as file:
+        lines = file.readlines()[1:]
+    return lines
+
+def has_listbox(filepath: str) -> bool:
+    with open(filepath, "r") as file:
+        content = file.read()
+    try:
+        lbi = content.find("tk.Listbox(")
+        return True
+    except IndexError:
+        return False
+    
