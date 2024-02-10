@@ -11,6 +11,14 @@ Convert your tkinter scripts and guis to custom tkinter with this command line t
 
 please, please, please if you experience a bug or bad operations please submit them to me so i can fix it immediatly. i dont have hundreds of guis to test this on.
 
+
+# Update Feb 9 2024
+- fixed base and meta class tkinter widgets to represent ctk ones
+- fixed Checkbutton to CheckBox
+- fixed Radiobutton to RadioButton
+- No longer falsly import tk.Text
+- uses CTkSlider for tk.Scale
+- 
 # Updates April 14 2023
 
 - Now supports ttk by default
