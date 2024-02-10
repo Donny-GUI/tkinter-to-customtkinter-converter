@@ -200,7 +200,6 @@ def make_custom_tkinter(input_file:str, output_filename: str, convert_listboxes:
             status.update(" fixing the listboxes...")
             console.print("    Converting listboxes...")
             rewrite_listboxes(file_path = output_filename)
-
         print(output_filename)
 
 
@@ -239,8 +238,10 @@ class AppArgs(object):
 
             if nextarg in ["help", "--help", "-h"]:
                 self.help_flag = True
+                
             elif nextarg in ["listbox", "--listbox", "-l"]:
                 self.listbox_flag = True
+
             elif nextarg in ["outfile", "--outfile", "-o"]:
 
                 self.outfile_flag = True
@@ -248,7 +249,9 @@ class AppArgs(object):
                     nextarg = next(self.arg_iter)
                     self.outfile_value = nextarg
                 except StopIteration:
+                    self.outfile_flag = False
                     break
+
             elif nextarg not in ["python3", "python", os.path.basename(__file__)] and nextarg.endswith(".py"):
                 self.targets.append(nextarg)
         
