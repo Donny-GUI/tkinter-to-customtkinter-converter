@@ -65,7 +65,7 @@ python3 tk_to_ctk.py <target> <target2> <target3> ....
 
 ## tkinter-to-customtkinter.util
 Contains utility functions and constants
-```
+```Python3
 get_operating_system()
 # get the name of the operating system
 pip_str
