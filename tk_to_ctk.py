@@ -298,10 +298,10 @@ if __name__ == "__main__":
     console = Console()
     args = AppArgs()
 
-    if args.targets == []:
+    if not args.has_targets == []:
         console.print("   You have to specify a target file...")
-        exit()
-        
+        sys.exit()
+
     if args.not_enough:
         console.print(Panel(use_panel_str, highlight="blue", title="[blue]Tkinter to CustomTkinter[/blue] v 1.1", title_align="left", expand=True))
 
