@@ -96,7 +96,7 @@ Please see https://github.com/TomSchimansky/CustomTkinter
 ```Powershell
 git clone https://github.com/Donny-GUI/tkinter-to-customtkinter-converter.git
 cd tkinter-to-customtkinter-converter
-python tk_to_ctk.py <target> <target2> <target3> ....
+python tk_to_ctk.py <target> 
 ```
 
 ### Unix/Linux Users
@@ -105,7 +105,7 @@ python tk_to_ctk.py <target> <target2> <target3> ....
 ```Bash
 git clone https://github.com/Donny-GUI/tkinter-to-customtkinter-converter.git
 cd tkinter-to-customtkinter-converter
-python3 tk_to_ctk.py <target> <target2> <target3> ....
+python3 tk_to_ctk.py <target> 
 ```
 
 
