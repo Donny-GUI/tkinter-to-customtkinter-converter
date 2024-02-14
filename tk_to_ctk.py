@@ -288,7 +288,6 @@ def main():
     global Gverbose
 
     parser = get_parser()
-    print(parser.parse_args())
 
     try:
         args = parser.parse_args()
@@ -302,7 +301,7 @@ def main():
     if args.Examples:
         print_examples()
 
-    if args.Target == None and args.Multiple == None:
+    if args.Target == None and args.Multiple == []:
         print_help_screen()
         print_warning(" You must specify a target file to convert....")
         return
@@ -335,11 +334,16 @@ def main():
     
     else:
         verbose_print("Single Target conversion underway...")
-        if os.path.exists(str(parser.Target)):
-            make_custom_tkinter(input_file=parser.Target, 
-                                output_file=parser.Output, 
-                                convert_listboxes=parser.Listboxes, 
-                                verbose=args.Verbose)
+        try:
+            if os.path.exists(str(parser.Target)):
+                make_custom_tkinter(input_file=parser.Target, 
+                                    output_file=parser.Output, 
+                                    convert_listboxes=parser.Listboxes, 
+                                    verbose=args.Verbose)
+        except AttributeError:
+            print_help_screen()
+            print_warning("Must specify a Target to convert...")
+            return
         else:
             trypath = os.path.join(os.getcwd(), os.path.basename(str(parser.Target)))
             if os.path.exists(trypath):
