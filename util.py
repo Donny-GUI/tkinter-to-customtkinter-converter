@@ -1,5 +1,6 @@
 import platform
 
+
 def get_operating_system() -> str:
     """
     Determine the operating system being used.
@@ -55,3 +56,10 @@ def has_listbox(filepath: str) -> bool:
     except IndexError:
         return False
     
+def print_warning(string: str) -> None:
+    print("\033[35m[WARNING]\033[0m:\033[31m"+string+"\033[0m")
+
+def print_update(string: str) -> None:
+    if isinstance(string, list):
+        string = "[" + ", ".join(string) + "]"
+    print("\033[32m[UPDATE]\033[0m:\033[33m"+string+"\033[0m")
