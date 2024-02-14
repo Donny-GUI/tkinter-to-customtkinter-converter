@@ -7,12 +7,14 @@ argument_parser = argparse.ArgumentParser(description='Convert Tkinter scripts t
     add_help=False,
     exit_on_error=False
     )
-argument_parser.add_argument('Target', 
+argument_parser.add_argument('Target',
+    default=None,
     help='Input file path for Tkinter script',
     metavar="TARGET",
     nargs="?"
     )
-argument_parser.add_argument('-h', '--help', 
+argument_parser.add_argument('-h', '--help',
+    default=False,
     dest="Help", 
     action="store_true", 
     help='Show this help message and exit')
