@@ -11,6 +11,41 @@ Convert your tkinter scripts and guis to custom tkinter with this command line t
 
 please, please, please if you experience a bug or bad operations please submit them to me so i can fix it immediatly. i dont have hundreds of guis to test this on.
 
+# New Cmdline Application
+
+```
+tk2ctk   -  Tkinter to CustomTkinter
+
+Description:  tkinter to customtkinter file converter.
+
+Usage:        tk2ctk [file] [Options]
+              tk2ctk -m [file] [file2] [file3] ...
+              tk2ctk [file] -o [file]
+
+Options:
+    -h, --help           Show this help message and exit
+    -o, --output         Define the output file
+    -v, --verbose        Operate with higher verbosity level
+    -l, --listboxes      Convert listboxes to custom listboxes
+    -m, --multiple       Convert multiple target scripts
+    -e, --examples       Show examples for flags and options
+```
+
+-o Flag is used to set the outfile
+
+
+-l flag converts tk.Listbox to a custom version
+
+
+-m is the multiple targets flag. Use this to target more then one tkinter script
+
+
+-e shows example usages
+
+
+![Screenshot 2024-02-13 195702](https://github.com/Donny-GUI/tkinter-to-customtkinter-converter/assets/108424001/796ab2eb-3edb-40fe-953e-0009b3aa8e42)
+
+
 ## Before
 
 ![before](https://github.com/Donny-GUI/tkinter-to-customtkinter-converter/assets/108424001/900c08c2-e364-4533-bf0d-227536aae7df)
@@ -20,7 +55,10 @@ please, please, please if you experience a bug or bad operations please submit t
 
 ![after](https://github.com/Donny-GUI/tkinter-to-customtkinter-converter/assets/108424001/4a692be9-a57e-4b8a-9061-d32eebded834)
 
-
+# Update Feb 13 2024
+- New command line interface
+- now supports listboxes
+  
 
 # Update Feb 9 2024
 - fixed base and meta class tkinter widgets to represent ctk ones
@@ -58,7 +96,7 @@ Please see https://github.com/TomSchimansky/CustomTkinter
 ```Powershell
 git clone https://github.com/Donny-GUI/tkinter-to-customtkinter-converter.git
 cd tkinter-to-customtkinter-converter
-python tk_to_ctk.py <target> <target2> <target3> ....
+python tk_to_ctk.py <target> 
 ```
 
 ### Unix/Linux Users
@@ -67,7 +105,7 @@ python tk_to_ctk.py <target> <target2> <target3> ....
 ```Bash
 git clone https://github.com/Donny-GUI/tkinter-to-customtkinter-converter.git
 cd tkinter-to-customtkinter-converter
-python3 tk_to_ctk.py <target> <target2> <target3> ....
+python3 tk_to_ctk.py <target> 
 ```
 
 
