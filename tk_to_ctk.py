@@ -12,7 +12,7 @@ except:
     print(f"rich has been installed.")
 from rich.status import Status
 from widget_replacer import WidgetReplacer
-from parser import argument_parser as parser
+from app_parser import argument_parser as parser
 
 
 Gverbose = False
