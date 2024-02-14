@@ -23,19 +23,23 @@ argument_parser.add_argument('-o', '--outfile',
     const='', 
     help='Specify output file')
 argument_parser.add_argument('-v', '--verbose', 
-    dest="Verbose", 
+    dest="Verbose",
+    default=False, 
     action='store_true',  
     help='Operate with verbosity')
 argument_parser.add_argument('-l', '--listboxes', 
+    default=False,
     dest="Listboxes", 
     action='store_true', 
     help='Convert listboxes to custom listboxes')
 argument_parser.add_argument('-m', '--multiple', 
-    dest="Multiple", 
+    dest="Multiple",
+    default=[], 
     nargs='+',  
     help="Specify multiple targets")
 argument_parser.add_argument('-e', '--examples', 
     dest="Examples", 
+    default=False,
     action="store_true",
     help="Show examples for additional help")
 
