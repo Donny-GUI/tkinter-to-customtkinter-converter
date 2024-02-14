@@ -1,7 +1,7 @@
-import customtkinter
+import customtkinter as ctk
 
 
-class CTkListbox(customtkinter.CTkScrollableFrame):
+class CTkListbox(ctk.CTkScrollableFrame):
     def __init__(
         self,
         master: any,
@@ -37,22 +37,22 @@ class CTkListbox(customtkinter.CTkScrollableFrame):
             super().configure(bg_color=bg_color)
 
         self.select_color = (
-            customtkinter.ThemeManager.theme["CTkButton"]["fg_color"]
+            ctk.ThemeManager.theme["CTkButton"]["fg_color"]
             if highlight_color == "default"
             else highlight_color
         )
         self.text_color = (
-            customtkinter.ThemeManager.theme["CTkButton"]["text_color"]
+            ctk.ThemeManager.theme["CTkButton"]["text_color"]
             if text_color == "default"
             else text_color
         )
         self.hover_color = (
-            customtkinter.ThemeManager.theme["CTkButton"]["hover_color"]
+            ctk.ThemeManager.theme["CTkButton"]["hover_color"]
             if hover_color == "default"
             else hover_color
         )
         self.font = (
-            (customtkinter.ThemeManager.theme["CTkFont"]["family"], 13)
+            (ctk.ThemeManager.theme["CTkFont"]["family"], 13)
             if font == "default"
             else font
         )
@@ -185,7 +185,7 @@ class CTkListbox(customtkinter.CTkScrollableFrame):
         if index in self.buttons:
             self.buttons[index].destroy()
 
-        self.buttons[index] = customtkinter.CTkButton(
+        self.buttons[index] = ctk.CTkButton(
             self,
             text=option,
             fg_color=self.button_fg_color,

@@ -21,6 +21,7 @@ def get_parser():
         help='Show this help message and exit')
     argument_parser.add_argument('-o', '--outfile', 
         dest="Output",
+        default=None,
         nargs="?", 
         metavar="OUTFILE", 
         const='', 

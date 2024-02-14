@@ -1,7 +1,7 @@
 import re
 import os
 import subprocess
-from util import pip_str, get_listbox_source, has_listbox, classes_begin_index, print_warning
+from util import pip_str, get_listbox_source, has_listbox, classes_begin_index, print_warning, print_update
 from lists import tkinter_widgets, ctk_widgets
 from templates import print_examples, print_help_screen
 try:
@@ -178,11 +178,11 @@ def rewrite_listboxes(filepath: str) -> None:
         with open(filepath, "r") as r:
             content = r.read()
         # substitute the listboxes for the CTkListbox
-        content1 = re.sub(r"ttk.Listbox(", r"CTkListbox(", content)
-        content2 = re.sub(r"tk.Listbox(", r"CTkListbox(", content1)
+        content2 = re.sub(r'tk\.Listbox(?!\()', r" CTkListbox", content)
+        content3 = re.sub(r"customtkinter\.ThemeManager\.", "ctk.ThemeManager.", content2)
         # write the final content
         with open(filepath, "w") as w:
-            w.write(content2)
+            w.write(content3)
 
 def make_custom_tkinter(input_file:str, output_filename: str, convert_listboxes: bool=False, verbose: str=False) -> None:
     """
@@ -276,7 +276,7 @@ def make_custom_tkinter(input_file:str, output_filename: str, convert_listboxes:
         if convert_listboxes:
             status.update(" fixing the listboxes...")
             verbose_print("Converting listboxes as specified by listbox flag...")
-            rewrite_listboxes(file_path = output_filename)
+            rewrite_listboxes(filepath = output_filename)
 
         verbose_print(output_filename)
         verbose_print("done.")
@@ -300,6 +300,7 @@ def main():
 
     if args.Examples:
         print_examples()
+        return
 
     if args.Target == None and args.Multiple == []:
         print_help_screen()
@@ -316,43 +317,54 @@ def main():
     if args.Output != None:
         verbose_print(f"Output file specified: {args.Output}")
 
-    elif args.Output == None:
+    elif args.Output == None and args.Target != None:
         verbose_print("Output not specified, making one from input file")
         args.Output = input_filename_to_output_filename(args.Target)
 
-    if args.Multiple:
+    if args.Multiple != []:
         verbose_print("Multiple conversions underway...")
-
-        if args.Output:
+        
+        if args.Output != None:
             verbose_print("Multiple flag used with outfile flag, defaulting to name generator...")
             print_warning("Cant specify output file with multiple conversions")
         
         for index, item in enumerate(args.Multiple):
             verbose_print(f"Conversion {index+1} : {item}")
-            output = input_filename_to_output_filename(item)
-            make_custom_tkinter(input_file=item, output_filename=output, convert_listboxes=parser.Listboxes, verbose=args.Verbose)
-    
+            if os.path.exists(item):
+                output = input_filename_to_output_filename(item)
+                make_custom_tkinter(input_file=item, output_filename=output, convert_listboxes=args.Listboxes, verbose=args.Verbose)
+                print_update(f"Finished {output}")
+            else:
+                print_warning(f"Cant locate {item}")
+        return
     else:
         verbose_print("Single Target conversion underway...")
         try:
-            if os.path.exists(str(parser.Target)):
-                make_custom_tkinter(input_file=parser.Target, 
-                                    output_file=parser.Output, 
-                                    convert_listboxes=parser.Listboxes, 
+            if os.path.exists(str(args.Target)):
+                make_custom_tkinter(input_file=args.Target, 
+                                    output_filename=args.Output, 
+                                    convert_listboxes=args.Listboxes, 
                                     verbose=args.Verbose)
+                fn = args.Output if args.Output != None else args.Target
+                print_update(f"Finished {fn}")
+                return
         except AttributeError:
+
             print_help_screen()
             print_warning("Must specify a Target to convert...")
             return
-        else:
-            trypath = os.path.join(os.getcwd(), os.path.basename(str(parser.Target)))
+        
+        except FileNotFoundError:
+
+            trypath = os.path.join(os.getcwd(), os.path.basename(str(args.Target)))
             if os.path.exists(trypath):
                 make_custom_tkinter(input_file=trypath, 
-                                    output_file=parser.Output, 
-                                    convert_listboxes=parser.Listboxes, 
+                                    output_filename=args.Output, 
+                                    convert_listboxes=args.Listboxes, 
                                     verbose=args.Verbose)
+                
             else:
-                print_warning(f"Could not find file {parser.Target}")
+                print_warning(f"Could not find file {args.Target}")
                 return
 
 
