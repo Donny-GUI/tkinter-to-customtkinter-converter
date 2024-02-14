@@ -12,7 +12,7 @@ except:
     print(f"rich has been installed.")
 from rich.status import Status
 from widget_replacer import WidgetReplacer
-from app_parser import argument_parser as parser
+from app_parser import get_parser
 
 
 Gverbose = False
@@ -285,7 +285,10 @@ def input_filename_to_output_filename(input_filename: str) -> str:
     return os.path.join(os.getcwd(), "customtkinter_" + os.path.basename(str(input_filename)))
 
 def main():
-    global Gverbose, parser
+    global Gverbose
+
+    parser = get_parser()
+    print(parser.parse_args())
 
     try:
         args = parser.parse_args()
