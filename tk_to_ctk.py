@@ -12,7 +12,9 @@ except:
     print(f"rich has been installed.")
 from rich.status import Status
 from widget_replacer import WidgetReplacer
+from tree import change_orient_to_orientation, change_textvariable_to_variable
 from app_parser import get_parser
+
 
 
 Gverbose = False
@@ -27,6 +29,25 @@ def verbose_print(string: str) -> None:
     if Gverbose:
         print(string)
 
+def fix_orient_and_textvar_calls(file_path: str) -> None:
+    """
+    Description: 
+        Takes a file path and replaces all the 
+        'orient="' -> orientation=" and 
+        "textvariable" to "variable" parameters 
+        for compatibility with customtkinter. 
+    Arguments:
+        file_path (str): path to the file
+    Returns: 
+        None
+    """
+    with open(file_path, "r", encoding="utf-8", errors="ignore") as file:
+        content = file.read()
+    source = change_textvariable_to_variable(content)
+    source = change_orient_to_orientation(source)
+    with open(file_path, "w", encoding="utf-8") as file:
+        file.write(source)
+    
 def replace_bg_with_bg_color_in_file(file_path:str) -> None:
     """
     Description: 
@@ -277,6 +298,12 @@ def make_custom_tkinter(input_file:str, output_filename: str, convert_listboxes:
             status.update(" fixing the listboxes...")
             verbose_print("Converting listboxes as specified by listbox flag...")
             rewrite_listboxes(filepath = output_filename)
+        
+        try:
+            status.update("Fixing textvariable and orient call parameters...")
+            fix_orient_and_textvar_calls(filepath = output_filename)
+        except:
+            verbose_print("Could not fix 'textvariable' and 'orient' call parameters")
 
         verbose_print(output_filename)
         verbose_print("done.")
@@ -370,3 +397,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
