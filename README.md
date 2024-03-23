@@ -55,6 +55,12 @@ Options:
 
 ![after](https://github.com/Donny-GUI/tkinter-to-customtkinter-converter/assets/108424001/4a692be9-a57e-4b8a-9061-d32eebded834)
 
+# Update March 23 2024
+- Now fixes textvariable -> variable function/class instance parameter names.
+- Now fixes orient -> orientation function/class instance parameter names.
+- tree.py file added to use the ast module to find function and class instances that use the parameters
+
+
 # Update Feb 13 2024
 - New command line interface
 - now supports listboxes
