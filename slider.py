@@ -6,7 +6,7 @@ def remove_resolution_parameter_for_ctk_slider(filepath: str):
         content = r.read()
     modified_code = remove_resolution_from_ctkslider(content)
     with open(filepath, "w") as w:
-        w.write(content)
+        w.write(modified_code)
 
 def remove_parameter_from_call(node: ast.Call, parameter: str):
     node.keywords = [kw for kw in node.keywords if kw.arg != parameter]
