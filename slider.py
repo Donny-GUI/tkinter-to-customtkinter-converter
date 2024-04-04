@@ -94,3 +94,5 @@ def remove_resolution_from_ctkslider(content: str) -> str:
     for node in slidernodes:
         remove_parameter_from_call(node, "resolution")
     return ast.unparse(tree)
+
+

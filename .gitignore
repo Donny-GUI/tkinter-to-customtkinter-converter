@@ -1,0 +1,7 @@
+*.pyc
+
+venv/
+
+.flake8
+
+tests/
