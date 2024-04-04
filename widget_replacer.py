@@ -12,84 +12,86 @@ class WidgetReplacer:
         constants (list): A list of existing tkinter constants found in the script.
         used_constants (list): A list of constants used in the script.
     """
+
     tkinter_constants = [
-    "ACTIVE",
-    "ALL",
-    "ANCHOR",
-    "ARC",
-    "BASELINE",
-    "BEVEL",
-    "BOTH",
-    "BOTTOM",
-    "BROWSE",
-    "BUTT",
-    "CASCADE",
-    "CENTER",
-    "CHAR",
-    "CHECKBUTTON",
-    "CHORD",
-    "COMMAND",
-    "DISABLED",
-    "E",
-    "END",
-    "EW",
-    "EXCEPTION",
-    "EXTENDED",
-    "FALSE",
-    "FIRST",
-    "FLAT",
-    "GROOVE",
-    "HIDDEN",
-    "HORIZONTAL",
-    "INSERT",
-    "INSIDE",
-    "LAST",
-    "LEFT",
-    "MITER",
-    "MULTIPLE",
-    "N",
-    "NE",
-    "NO",
-    "NONE",
-    "NORMAL",
-    "NS",
-    "NSEW",
-    "NW",
-    "OFF",
-    "ON",
-    "OUTSIDE",
-    "PAGES",
-    "PIESLICE",
-    "PROJECTING",
-    "RADIOBUTTON",
-    "RAISED",
-    "READABLE",
-    "RIDGE",
-    "RIGHT",
-    "ROUND",
-    "S",
-    "SCROLL",
-    "SE",
-    "SEL",
-    "SEL_FIRST",
-    "SEL_LAST",
-    "SEPARATOR",
-    "SINGLE",
-    "SOLID",
-    "SUNKEN",
-    "SW",
-    "Synchronous",
-    "SystemButton",
-    "TOP",
-    "TRUE",
-    "UNITS",
-    "VERTICAL",
-    "W",
-    "WORD",
-    "WRITABLE",
-    "X",
-    "Y",
+        "ACTIVE",
+        "ALL",
+        "ANCHOR",
+        "ARC",
+        "BASELINE",
+        "BEVEL",
+        "BOTH",
+        "BOTTOM",
+        "BROWSE",
+        "BUTT",
+        "CASCADE",
+        "CENTER",
+        "CHAR",
+        "CHECKBUTTON",
+        "CHORD",
+        "COMMAND",
+        "DISABLED",
+        "E",
+        "END",
+        "EW",
+        "EXCEPTION",
+        "EXTENDED",
+        "FALSE",
+        "FIRST",
+        "FLAT",
+        "GROOVE",
+        "HIDDEN",
+        "HORIZONTAL",
+        "INSERT",
+        "INSIDE",
+        "LAST",
+        "LEFT",
+        "MITER",
+        "MULTIPLE",
+        "N",
+        "NE",
+        "NO",
+        "NONE",
+        "NORMAL",
+        "NS",
+        "NSEW",
+        "NW",
+        "OFF",
+        "ON",
+        "OUTSIDE",
+        "PAGES",
+        "PIESLICE",
+        "PROJECTING",
+        "RADIOBUTTON",
+        "RAISED",
+        "READABLE",
+        "RIDGE",
+        "RIGHT",
+        "ROUND",
+        "S",
+        "SCROLL",
+        "SE",
+        "SEL",
+        "SEL_FIRST",
+        "SEL_LAST",
+        "SEPARATOR",
+        "SINGLE",
+        "SOLID",
+        "SUNKEN",
+        "SW",
+        "Synchronous",
+        "SystemButton",
+        "TOP",
+        "TRUE",
+        "UNITS",
+        "VERTICAL",
+        "W",
+        "WORD",
+        "WRITABLE",
+        "X",
+        "Y",
     ]
+
     def __init__(self, source: str, output: str) -> None:
         """
         Initialize the WidgetReplacer instance.
@@ -120,18 +122,17 @@ class WidgetReplacer:
         """
         with open(self.source, "r", encoding="utf-8", errors="ignore") as f:
             script_content = f.read()
-        out= ""
+        out = ""
         for onst in self.tkinter_constants:
             if re.search(onst, script_content):
                 self.constants.append(onst)
 
         for original, replacement in self.findables.items():
-            pattern = r'\b{}\b'.format(original)
+            pattern = r"\b{}\b".format(original)
             script_content = re.sub(pattern, replacement, script_content)
 
         with open(self.output, "w", errors="ignore") as f:
             f.write(script_content)
-
 
     def double_check(self):
         """
@@ -141,13 +142,13 @@ class WidgetReplacer:
             script_content = f.readlines()
 
         out = "import customtkinter as ctk\nfrom customtkinter import "
-        m = len(self.constants) -1
+        m = len(self.constants) - 1
         for index, constant in enumerate(self.constants):
             if index == m:
-                out+=f"{constant}"
+                out += f"{constant}"
             else:
-                out+=f"{constant}, "
-        out+="\n"
+                out += f"{constant}, "
+        out += "\n"
 
         with open(self.output, "w") as f:
             f.write(out)

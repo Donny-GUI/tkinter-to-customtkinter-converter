@@ -30,5 +30,6 @@ examples_template = f"""\
 def print_examples() -> None:
     print(examples_template)
 
+
 def print_help_screen() -> None:
     print(help_template)

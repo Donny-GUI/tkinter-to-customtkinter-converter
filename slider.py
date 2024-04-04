@@ -19,6 +19,7 @@ def remove_resolution_parameter_for_ctk_slider(filepath: str) -> None:
     with open(filepath, "w") as w:
         w.write(modified_code)
 
+
 def remove_parameter_from_call(node: ast.Call, parameter: str) -> None:
     """
     Remove the specified parameter from the given AST call node.
@@ -32,7 +33,10 @@ def remove_parameter_from_call(node: ast.Call, parameter: str) -> None:
     """
     node.keywords = [kw for kw in node.keywords if kw.arg != parameter]
 
-def remove_parameter_from_initializer(tree: ast.AST, name: str, parameter: str) -> ast.AST:
+
+def remove_parameter_from_initializer(
+    tree: ast.AST, name: str, parameter: str
+) -> ast.AST:
     """
     Remove the specified parameter from the initializers with the given name
     in the AST tree.
@@ -52,7 +56,10 @@ def remove_parameter_from_initializer(tree: ast.AST, name: str, parameter: str) 
                 remove_parameter_from_call(node, parameter)
     return tree
 
-def remove_parameter_from_initializers(tree: ast.AST, names: list[str], parameter: str) -> ast.AST:
+
+def remove_parameter_from_initializers(
+    tree: ast.AST, names: list[str], parameter: str
+) -> ast.AST:
     """
     Remove the specified parameter from the initializers with the given names
     in the AST tree.
@@ -71,7 +78,8 @@ def remove_parameter_from_initializers(tree: ast.AST, names: list[str], paramete
             if string_name in names:
                 remove_parameter_from_call(node, parameter)
     return tree
-    
+
+
 def remove_resolution_from_ctkslider(content: str) -> str:
     """
     Remove the 'resolution' parameter from calls to ctk.CTkSlider or CTkSlider
@@ -94,5 +102,3 @@ def remove_resolution_from_ctkslider(content: str) -> str:
     for node in slidernodes:
         remove_parameter_from_call(node, "resolution")
     return ast.unparse(tree)
-
-

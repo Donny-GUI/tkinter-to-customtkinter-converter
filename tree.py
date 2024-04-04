@@ -21,7 +21,10 @@ def change_textvariable_to_variable(source_code: str) -> str:
             if isinstance(node.func, ast.Name):
                 if node.keywords:
                     for keyword in node.keywords:
-                        if isinstance(keyword, ast.keyword) and keyword.arg == "textvariable":
+                        if (
+                            isinstance(keyword, ast.keyword)
+                            and keyword.arg == "textvariable"
+                        ):
                             keyword.arg = "variable"
             return node
 
@@ -33,7 +36,10 @@ def change_textvariable_to_variable(source_code: str) -> str:
                     if isinstance(call.func, ast.Name):
                         if call.keywords:
                             for keyword in call.keywords:
-                                if isinstance(keyword, ast.keyword) and keyword.arg == "textvariable":
+                                if (
+                                    isinstance(keyword, ast.keyword)
+                                    and keyword.arg == "textvariable"
+                                ):
                                     keyword.arg = "variable"
             return node
 
@@ -48,6 +54,7 @@ def change_textvariable_to_variable(source_code: str) -> str:
     modified_source_code = ast.unparse(transformed_tree)
 
     return modified_source_code
+
 
 def change_orient_to_orientation(source_code: str) -> str:
     """Change occurrences of the parameter 'orient' to 'orientation' in function calls and class instantiations.
@@ -79,7 +86,10 @@ def change_orient_to_orientation(source_code: str) -> str:
                     if isinstance(call.func, ast.Name):
                         if call.keywords:
                             for keyword in call.keywords:
-                                if isinstance(keyword, ast.keyword) and keyword.arg == "orient":
+                                if (
+                                    isinstance(keyword, ast.keyword)
+                                    and keyword.arg == "orient"
+                                ):
                                     keyword.arg = "orientation"
             return node
 

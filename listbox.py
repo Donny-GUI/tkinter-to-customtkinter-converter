@@ -92,7 +92,7 @@ class CTkListbox(ctk.CTkScrollableFrame):
         """select the option"""
         for options in self.buttons.values():
             options.configure(fg_color=self.button_fg_color)
-        
+
         if isinstance(index, int):
             if index in self.buttons:
                 selected_button = self.buttons[index]
@@ -100,7 +100,7 @@ class CTkListbox(ctk.CTkScrollableFrame):
                 selected_button = list(self.buttons.values())[index]
         else:
             selected_button = self.buttons[index]
-  
+
         if self.multiple:
             if selected_button in self.selections:
                 self.selections.remove(selected_button)
@@ -361,4 +361,3 @@ class CTkListbox(ctk.CTkScrollableFrame):
             # Update the scrollbar position
             if self._parent_canvas.yview() != (0.0, 1.0):
                 self._parent_canvas.yview("scroll", int(100 / 6), "units")
-
