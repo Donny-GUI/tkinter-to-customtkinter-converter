@@ -301,6 +301,7 @@ def make_custom_tkinter(input_file:str, output_filename: str, convert_listboxes:
             verbose_print("Converting listboxes as specified by listbox flag...")
             rewrite_listboxes(filepath = output_filename)
         
+        # have to be try statements because it uses ast.parse and ast.unparse
         try:
             status.update("Fixing textvariable and orient call parameters...")
             fix_orient_and_textvar_calls(filepath = output_filename)

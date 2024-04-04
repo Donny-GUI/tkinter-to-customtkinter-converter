@@ -4,7 +4,7 @@ import ast
 def remove_resolution_parameter_for_ctk_slider(filepath: str):
     with open(filepath, "r") as r:
         content = r.read()
-    modified_code = remove_resolution_from_ctkslider()
+    modified_code = remove_resolution_from_ctkslider(content)
     with open(filepath, "w") as w:
         w.write(content)
 
@@ -28,7 +28,7 @@ def remove_parameter_from_initializers(tree: ast.AST, names: list[str], paramete
     return tree
     
 def remove_resolution_from_ctkslider(content: str) -> str:
-    tree = ast.parse(content)
+    tree = ast.parse(content, type_comments=True)
     slidernodes = []
     for node in ast.walk(tree):
         if isinstance(node, ast.Call):
