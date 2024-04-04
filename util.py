@@ -1,5 +1,30 @@
 import platform
+import ast
+import copy
 
+
+def point(thing: any) -> any:
+    """ Makes a reference to an object """
+    ref = thing
+    return ref
+
+def interface(thing: any) -> any:
+    """ Create a a copy of the object but reference nested objects """
+    replica = copy.copy(thing)
+    return replica
+
+def clone(thing: any) -> any:
+    """ Create a copy of an object not as a reference """
+    newthing = copy.deepcopy(thing)
+    return newthing
+
+def parsetree(source: str) -> ast.AST:
+    try:
+        tree = ast.parse(source, type_comments=True)
+    except:
+        tree = ast.parse(source)
+    finally:
+        return tree
 
 def get_operating_system() -> str:
     """

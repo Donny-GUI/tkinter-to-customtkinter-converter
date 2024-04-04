@@ -1,5 +1,6 @@
 import ast
 from typing import List, Tuple
+from util import parsetree
 
 
 def change_textvariable_to_variable(source_code: str) -> str:
@@ -37,7 +38,7 @@ def change_textvariable_to_variable(source_code: str) -> str:
             return node
 
     # Parse the source code into an AST
-    tree = ast.parse(source_code)
+    tree = parsetree(source_code)
 
     # Transform the AST with the TextVariableVisitor
     transformer = TextVariableVisitor()

@@ -1,4 +1,5 @@
 import ast
+from util import parsetree
 
 
 def remove_resolution_parameter_for_ctk_slider(filepath: str) -> None:
@@ -82,12 +83,13 @@ def remove_resolution_from_ctkslider(content: str) -> str:
     Returns:
         str: The modified Python code without the 'resolution' parameter.
     """
-    tree = ast.parse(content, type_comments=True)
+    tree = parsetree(content)
     slidernodes = []
     for node in ast.walk(tree):
         if isinstance(node, ast.Call):
             string_name = ast.unparse(node.func)
             if string_name == "ctk.CTkSlider" or string_name == "CTkSlider":
+                n = deep_copy(node)
                 slidernodes.append(node)
     for node in slidernodes:
         remove_parameter_from_call(node, "resolution")
