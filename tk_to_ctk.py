@@ -14,7 +14,7 @@ from rich.status import Status
 from widget_replacer import WidgetReplacer
 from tree import change_orient_to_orientation, change_textvariable_to_variable
 from app_parser import get_parser
-
+from slider import remove_resolution_parameter_for_ctk_slider
 
 
 Gverbose = False
@@ -205,6 +205,8 @@ def rewrite_listboxes(filepath: str) -> None:
         with open(filepath, "w") as w:
             w.write(content3)
 
+
+
 def make_custom_tkinter(input_file:str, output_filename: str, convert_listboxes: bool=False, verbose: str=False) -> None:
     """
     Description: 
@@ -304,6 +306,12 @@ def make_custom_tkinter(input_file:str, output_filename: str, convert_listboxes:
             fix_orient_and_textvar_calls(filepath = output_filename)
         except:
             verbose_print("Could not fix 'textvariable' and 'orient' call parameters")
+        
+        try:
+            status.update("Fixing resolution parameters for CTkSlider...")
+            remove_resolution_parameter_for_ctk_slider(filepath = output_filename)
+        except:
+            verbose_print("Could not remove resolution parameter from CTkSlider")
 
         verbose_print(output_filename)
         verbose_print("done.")
