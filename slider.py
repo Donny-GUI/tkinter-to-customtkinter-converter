@@ -1,5 +1,7 @@
 import ast
 from util import parsetree
+from copy import deepcopy
+
 
 
 def remove_resolution_parameter_for_ctk_slider(filepath: str) -> None:
@@ -97,7 +99,7 @@ def remove_resolution_from_ctkslider(content: str) -> str:
         if isinstance(node, ast.Call):
             string_name = ast.unparse(node.func)
             if string_name == "ctk.CTkSlider" or string_name == "CTkSlider":
-                n = deep_copy(node)
+                n = deepcopy(node)
                 slidernodes.append(node)
     for node in slidernodes:
         remove_parameter_from_call(node, "resolution")

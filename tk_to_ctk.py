@@ -12,6 +12,7 @@ from util import (
 from lists import tkinter_widgets, ctk_widgets
 from templates import print_examples, print_help_screen
 
+# Ensure rich is installed here
 try:
     from rich.status import Status
 except:
@@ -19,6 +20,7 @@ except:
     subprocess.run([pip_str, "install", "rich"], check=True)
     print(f"rich has been installed.")
 from rich.status import Status
+
 from widget_replacer import WidgetReplacer
 from tree import change_orient_to_orientation, change_textvariable_to_variable
 from app_parser import get_parser

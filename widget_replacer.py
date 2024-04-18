@@ -1,4 +1,16 @@
 import re
+import ast
+
+
+
+tkinter_widgets = [ "Button", "Canvas", "Checkbutton", 
+                   "Entry", "Label", "Menubutton", 
+                   "Message", "Radiobutton", "Scale", 
+                   "Scrollbar", "Text", "Toplevel", 
+                   "Treeview", "Frame", "Progressbar", 
+                   "Separator"]
+ctk_widgets = ["CTk" + x for x in tkinter_widgets]
+
 
 
 class WidgetReplacer:
@@ -100,11 +112,17 @@ class WidgetReplacer:
             source (str): The path to the source script file.
             output (str): The path to the output script file.
         """
+        self.source: str = source
+        self.output: str = output
+        self.findables: dict[str, str] = {}
+        self.constants: list[str] = []
+        self.used_constants: list[str] = []
+    
+    def set_source(self, source: str):
         self.source = source
+    
+    def set_output(self, output: str):
         self.output = output
-        self.findables = {}
-        self.constants = []
-        self.used_constants = []
 
     def add_findable(self, original: str, replacement: str) -> None:
         """
@@ -163,3 +181,5 @@ class WidgetReplacer:
             constant (str): The constant to add.
         """
         self.constants.append(constant)
+
+
