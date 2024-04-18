@@ -64,7 +64,7 @@ That is that it can convert tkinter python source strings to customtkinter sourc
 
 Case #1  from a string
 
-```
+```Python3
 from .converter import SourceConverter
 sc = SourceConverter()
 with open("myfile.py", "r) as f:
@@ -74,7 +74,7 @@ ctk_source = sc.from_string(content)
 
 or
 
-```
+```Python3
 import .converter
 sc = converter.SourceConverter()
 with open("myfile.py", "r) as f:
@@ -85,7 +85,7 @@ ctk_source = sc.from_string(content)
 
 Case #2  from a file
 
-```
+```Python3
 from .converter import SourceConverter
 sc = SourceConverter()
 ctk_source = sc.from_file(content)
@@ -93,7 +93,7 @@ ctk_source = sc.from_file(content)
 
 or 
 
-```
+```Python3
 import .converter
 sc = converter.SourceConverter()
 ctk_source = sc.from_file(content)
