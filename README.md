@@ -55,6 +55,57 @@ Options:
 
 ![after](https://github.com/Donny-GUI/tkinter-to-customtkinter-converter/assets/108424001/4a692be9-a57e-4b8a-9061-d32eebded834)
 
+
+# New Source Converter Class
+The SourceConverter class is a standalone class that can convert source to source.
+That is that it can convert tkinter python source strings to customtkinter source strings.
+
+### Usage
+
+Case #1  from a string
+
+```
+from .converter import SourceConverter
+sc = SourceConverter()
+with open("myfile.py", "r) as f:
+    content = f.read()
+ctk_source = sc.from_string(content)
+```
+
+or
+
+```
+import .converter
+sc = converter.SourceConverter()
+with open("myfile.py", "r) as f:
+    content = f.read()
+ctk_source = sc.from_string(content)
+```
+
+
+Case #2  from a file
+
+```
+from .converter import SourceConverter
+sc = SourceConverter()
+ctk_source = sc.from_file(content)
+```
+
+or 
+
+```
+import .converter
+sc = converter.SourceConverter()
+ctk_source = sc.from_file(content)
+```
+
+
+
+# Update April 18 2024
+- Added converter.py file
+- Added SourceConverter class
+
+
 # Update March 23 2024
 - Now fixes textvariable -> variable function/class instance parameter names.
 - Now fixes orient -> orientation function/class instance parameter names.

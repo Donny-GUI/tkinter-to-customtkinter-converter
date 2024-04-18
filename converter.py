@@ -373,7 +373,7 @@ class SourceConverter:
             self.replacer.add_findable(":{0},".format(widget), ":{0},".format(ctk_widget))
             self.replacer.add_findable(":{0}".format(widget), ":{0}".format(ctk_widget))
 
-    def convert_string(self, string: str) -> str:
+    def from_string(self, string: str) -> str:
         script_content = string
         
         self.replacer.constants = []
@@ -432,5 +432,9 @@ class SourceConverter:
             source = source
         return source
     
+    def from_file(self, filepath: str) -> str:
+        with open(filepath, 'r') as f:
+            content = f.read()
+        return self.from_string(content)
         
         
