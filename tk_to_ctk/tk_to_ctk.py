@@ -1,7 +1,7 @@
 import re
 import os
 import subprocess
-from util import (
+from .util import (
     pip_str,
     get_listbox_source,
     has_listbox,
@@ -9,8 +9,8 @@ from util import (
     print_warning,
     print_update,
 )
-from lists import tkinter_widgets, ctk_widgets
-from templates import print_examples, print_help_screen
+from .lists import tkinter_widgets, ctk_widgets
+from .templates import print_examples, print_help_screen
 
 # Ensure rich is installed here
 try:
@@ -21,10 +21,10 @@ except:
     print(f"rich has been installed.")
 from rich.status import Status
 
-from widget_replacer import WidgetReplacer
-from tree import change_orient_to_orientation, change_textvariable_to_variable
-from app_parser import get_parser
-from slider import remove_resolution_parameter_for_ctk_slider
+from .widget_replacer import WidgetReplacer
+from .tree import change_orient_to_orientation, change_textvariable_to_variable
+from .app_parser import get_parser
+from .slider import remove_resolution_parameter_for_ctk_slider
 
 
 Gverbose = False
