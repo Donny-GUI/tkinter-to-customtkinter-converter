@@ -412,47 +412,156 @@ def make_custom_tkinter(
             print("Cannot Parse file!")
             exit(1)
     
-
-        #call_name_changer = CallNameChanger()
+        print("Fixing call parameters...")
         call_argument_changer = CallArgumentNameChanger()
         call_argument_remover = CallArgumentRemover()
+        status.update("Fixing call parameters...")
+        
+        removal_tags = {
+            "tk.OptionMenu": ["bg", "fg", "activebackground", "activeforeground", "bd", "width", "font", "relief"],
+            "tk.Menu": ["bg_color", "fg_color", "border_width"],
+            "tk.Listbox": ["activebackground", "activeforeground", "bd", "width", "font", "relief"],
 
-        fix_these = {
-            "bg": "bg_color",
-            "fg": "fg_color",
-            "borderwidth": "border_width",
-            "orient": "orientation"
+            "ctk.CTkScrollbar": ["activebackground", "activeforeground", "bd", "width", "font", "relief"],
+            "ctk.CTkText": ["activebackground", "activeforeground", "bd", "width", "font", "relief"],
+            "ctk.CTkEntry": ["activebackground", "activeforeground", "bd", "width", "font", "relief"],
+            "ctk.CTkLabel": ["activebackground", "activeforeground", "bd", "width", "font", "relief"],
+            "ctk.CTkButton": ["activebackground", "activeforeground", "bd", "width", "font", "relief"],
+            "ctk.CTkCheckBox": ["activebackground", "activeforeground", "bd", "width", "font", "relief", "justify", "anchor"],
+            "ctk.CTkRadioButton": ["activebackground", "activeforeground", "bd", "width", "font", "relief", "justify", "anchor"],
+            "ctk.CTkComboBox": ["activebackground", "activeforeground", "bd", "width", "font", "relief"],
+            "ctk.CTkOptionMenu": ["activebackground", "activeforeground", "bd", "width", "font", "relief"],
+            "ctk.CTkSlider": ["activebackground", "activeforeground", "bd", "width", "font", "relief"],
+            "ctk.CTkProgressBar": ["activebackground", "activeforeground", "bd", "width", "font", "relief"],
+            "ctk.CTkFrame": ["activebackground", "activeforeground", "bd", "width", "font", "relief", "padx", "pady"],
+            "ctk.CTkScrollableFrame": ["activebackground", "activeforeground", "bd", "width", "font", "relief"],
+            "ctk.CTkCanvas": ["activebackground", "activeforeground", "bd", "width", "font", "relief", "bg_color", "fg_color"],
+            "ctk.CTkTabview": ["activebackground", "activeforeground", "bd", "width", "font", "relief"],
+            "ctk.CTkTab": ["activebackground", "activeforeground", "bd", "width", "font", "relief"],
+            "ctk.CTkTextbox": ["activebackground", "activeforeground", "bd", "width", "font", "relief"],
+            "ctk.CTkSlider": ["activebackground", "activeforeground", "bd", "width", "font", "relief", 'orient','length', 'tickinterval', 'sliderlength', 'showvalue',],
+        }
+        change_tags = {
+            "tk.PanedWindow":{
+                "bg_color":"bg",
+                "fg_color":"fg",
+                "border_width":"borderwidth",
+            },
+            "tk.Message":{
+                "bg_color":"bg",
+                "fg_color":"fg",
+                "border_width":"borderwidth",
+            },
+            "tk.LabelFrame":{
+                "bg_color":"bg",
+                "fg_color":"fg",
+                "border_width":"borderwidth",
+            },
+            "tk.OptionMenu":{
+                "bg_color":"bg", 
+                "fg_color":"fg", 
+                "border_width":"borderwidth"
+            },
+            "tk.Listbox":{
+                "bg_color":"bg", 
+                "fg_color":"fg", 
+                "border_width":"borderwidth"
+            },
+
+            "ctk.CTkScrollbar":{
+                "bg":"bg_color",
+                "fg":"fg_color",
+                "borderwidth":"border_width",
+                "orient":"orientation",
+            },
+
+            "ctk.CTkTextbox":{
+                "bg":"bg_color",
+                "fg":"fg_color",
+                "borderwidth":"border_width",
+            },
+            "ctk.CTkText":{
+                "bg":"bg_color",
+                "fg":"fg_color",
+                "borderwidth":"border_width",
+            },
+            "ctk.CTkEntry":{
+                "bg":"bg_color",
+                "fg":"fg_color",
+                "borderwidth":"border_width",
+            },
+            "ctk.CTkLabel":{
+                "bg":"bg_color",
+                "fg":"fg_color",
+                "borderwidth":"border_width",
+            },
+            "ctk.CTkButton":{
+                "bg":"bg_color",
+                "fg":"fg_color",
+                "borderwidth":"border_width",
+            },
+            "ctk.CTkCheckBox":{
+                "bg":"bg_color",
+                "fg":"fg_color",
+                "borderwidth":"border_width",
+            },
+            "ctk.CTkRadioButton":{
+                "bg":"bg_color",
+                "fg":"fg_color",
+                "borderwidth":"border_width",
+            },
+            "ctk.CTkComboBox":{
+                "bg":"bg_color",
+                "fg":"fg_color",
+                "borderwidth":"border_width",
+            },
+            "ctk.CTkOptionMenu":{
+                "bg":"bg_color",
+                "fg":"fg_color",
+                "borderwidth":"border_width",
+            },
+            "ctk.CTkSlider":{
+                "bg":"bg_color",
+                "fg":"fg_color",
+                "borderwidth":"border_width",
+            },
+            "ctk.CTkProgressBar":{
+                "bg":"bg_color",
+                "fg":"fg_color",
+                "borderwidth":"border_width",
+            },
+            "ctk.CTkFrame":{
+                "bg":"bg_color",
+                "fg":"fg_color",
+                "borderwidth":"border_width",
+            },
+            "ctk.CTkScrollableFrame":{
+                "bg":"bg_color",
+                "fg":"fg_color",
+                "borderwidth":"border_width",
+            },
+            "ctk.CTkSlider":{
+                "bg":"bg_color",
+                "fg":"fg_color",
+                "borderwidth":"border_width",
+            },
 
         }
-        remove_these_keywords = ["relief", "activebackground", "activeforeground", "bd"]
 
-
-        for widget in tkinter_widgets:
-            # Add both the plain widget name and the qualified name
-            widget_name = f"CTk{widget}" if not widget.startswith("CTk") else widget
-            qualified_name = f"ctk.{widget_name}"
-            print(f"Registering removals for: {widget_name} and {qualified_name}")
-            for param in remove_these_keywords:
+        for widget_name, removing in removal_tags.items():
+            for param in removing:
                 call_argument_remover.add_keyword_removal(widget_name, param)
-                call_argument_remover.add_keyword_removal(qualified_name, param)
         
+        for widget_name, fix_these in change_tags.items():
+            for old, new in fix_these.items():
+                call_argument_changer.add_argument_name_change(widget_name, old, new)
+            
 
-        for item in ['orient', 'font', 'length', 'tickinterval', 'sliderlength', 'showvalue', 'bd', 'relief']:
-            call_argument_remover.add_keyword_removal("ctk.CTkSlider", item)
-
-
-        call_argument_remover.add_keyword_removal("ctk.CTkCheckBox", "anchor")
-        call_argument_remover.add_keyword_removal("ctk.CTkCheckBox", "justify")
-        call_argument_remover.add_keyword_removal("ctk.CTkRadioButton", "anchor")
-        call_argument_remover.add_keyword_removal("ctk.CTkRadioButton", "justify")
-
-        call_argument_remover.add_keyword_removal("ctk.CTkEntry", "relief")
-
-        call_argument_changer.add_argument_name_change("tk.Listbox", "bg_color", "bg")
-
-        tree = call_argument_changer.visit(tree)
-        tree = call_argument_remover.visit(tree)
+        tree = call_argument_changer.visit(ast.fix_missing_locations(tree))
+        tree = call_argument_remover.visit(ast.fix_missing_locations(tree))
         
+        print("Unparsing tree...")  
+        status.update("Unparsing tree...")
         try:
             source = ast.unparse(tree)
         except:

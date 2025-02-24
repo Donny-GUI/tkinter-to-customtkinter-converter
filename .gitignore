@@ -5,3 +5,4 @@ venv/
 .flake8
 
 tests/
+test.py
