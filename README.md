@@ -2,8 +2,28 @@
 
 ![Python_logo_icon](https://user-images.githubusercontent.com/108424001/226063288-66da2f57-f5b7-49f1-bdd5-f465e963b125.png)
 
-
-
+# HOW TO USE
+For Windows
+```
+git clone https://github.com/Donny-GUI/tkinter-to-customtkinter-converter.git
+cd tkinter-to-customtkinter-converter
+python main.py
+```
+For Linux
+```
+git clone https://github.com/Donny-GUI/tkinter-to-customtkinter-converter.git
+cd tkinter-to-customtkinter-converter
+python3 main.py 
+```
+# HOW TO BUILD
+```
+git clone https://github.com/Donny-GUI/tkinter-to-customtkinter-converter.git
+cd tkinter-to-customtkinter-converter
+pip install pyinstaller
+pyinstaller --onefile main.py tk2ctk
+cd dist
+.\tk2ctk
+```
 
 
 # tkinter-to-customtkinter-converter
