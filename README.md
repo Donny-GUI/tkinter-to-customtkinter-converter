@@ -120,6 +120,14 @@ ctk_source = sc.from_file(content)
 ```
 
 
+# UPDATE Feb 24 2025
+- added call.py file
+- added CallArgumentNameChanger class
+- added CallNameChanger class
+- added CallArgumentRemover class
+- now correctly changes "borderwidth" -> "border_width"
+- converts or removes unused or incorrect parameters for any ctk or tk class.
+- thank you to those who helped find these bugs
 
 # Update April 18 2024
 - Added converter.py file
