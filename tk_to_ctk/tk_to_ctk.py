@@ -1,6 +1,7 @@
 import re
 import os
 import subprocess
+import ast
 from .util import (
     pip_str,
     get_listbox_source,
@@ -25,15 +26,16 @@ from .widget_replacer import WidgetReplacer
 from .tree import change_orient_to_orientation, change_textvariable_to_variable
 from .app_parser import get_parser
 from .slider import remove_resolution_parameter_for_ctk_slider
+from .util import parsetree
+from .call import CallArgumentNameChanger, CallArgumentRemover, CallNameChanger
+
 
 
 Gverbose = False
 
-
 ##################################################
 # FUNCTIONS
 ##################################################
-
 
 def verbose_print(string: str) -> None:
     global Gverbose
@@ -225,6 +227,64 @@ def rewrite_listboxes(filepath: str) -> None:
         with open(filepath, "w") as w:
             w.write(content3)
 
+def remove_relief_from_CTkButton(content: str) -> str:
+    tree = parsetree(content)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            string_name = ast.unparse(node.func)
+            if string_name == "ctk.CTkButton" or string_name == "CTkButton":
+                node.keywords = [kw for kw in node.keywords if kw.arg != "relief"]
+    return ast.unparse(tree) 
+
+def remove_parameter_from_calls_with_names(node_names:list[str], content: str, parameter: str) -> str:
+    tree = parsetree(content)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            string_name = ast.unparse(node.func)
+            for name in node_names:
+                if name in string_name:
+                    node.keywords = [kw for kw in node.keywords if kw.arg != parameter]
+                    break
+            
+    return ast.unparse(tree)
+
+def change_parameter_in_calls_with_names(node_names:list[str], content: str, parameter: str, new_parameter: str) -> str:
+    tree = parsetree(content)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            string_name = ast.unparse(node.func)
+            for name in node_names:
+                if name in string_name:
+                    node.keywords = [kw for kw in node.keywords if kw.arg != parameter]
+                    node.keywords.append(ast.keyword(arg=new_parameter, value=node.keywords[0].value))
+                    break
+            
+    return ast.unparse(tree)
+
+def change_call_func_name(func_name:str, new_name:str, content: str) -> str:
+    tree = parsetree(content)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            string_name = ast.unparse(node.func)
+            if string_name == func_name:
+                if isinstance(node.func, ast.Name):
+                    node.func.id = new_name
+                elif isinstance(node.func, ast.Attribute):
+                    attr, value = new_name.split(".", 1)
+                    node.func.attr = attr
+                    node.func.value.id = value
+
+    return ast.unparse(tree)
+
+def remove_parameter_for_call(parameter:str, call_name:str, content: str) -> str:
+    tree = parsetree(content)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            string_name = ast.unparse(node.func)
+            if string_name == call_name:
+                node.keywords = [kw for kw in node.keywords if kw.arg != parameter]
+
+    return ast.unparse(tree)
 
 def make_custom_tkinter(
     input_file: str,
@@ -337,6 +397,59 @@ def make_custom_tkinter(
             remove_resolution_parameter_for_ctk_slider(filepath=output_filename)
         except:
             verbose_print("Could not remove resolution parameter from CTkSlider")
+        
+        
+        with open(output_filename, "r", errors="ignore") as f:
+            source = f.read()
+
+        source = source.replace("from customtkinter import \n", "")
+        source = source.replace("ctk.CTkMessage(", "tk.Message(")
+
+        try:
+            tree = ast.parse(source)
+        except SyntaxError:
+            verbose_print("SyntaxError")
+            print("Cannot Parse file!")
+            exit(1)
+    
+
+        #call_name_changer = CallNameChanger()
+        call_argument_changer = CallArgumentNameChanger()
+        call_argument_remover = CallArgumentRemover()
+
+        fix_these = {
+            "bg": "bg_color",
+            "fg": "fg_color",
+            "borderwidth": "border_width",
+            "orient": "orientation"
+
+        }
+        remove_these_keywords = ["relief"]
+
+
+        for widget in ctk_widgets:
+            second_name = "ctk." + widget
+            for name, value in fix_these.items():
+                call_argument_changer.add_change(widget, name, value)
+                call_argument_changer.add_change(second_name, name, value)
+
+            for name in remove_these_keywords:
+                call_argument_remover.add_change(widget, name)
+                call_argument_remover.add_change(second_name, name)
+        
+        tree = call_argument_changer.visit(tree)
+        tree = call_argument_remover.visit(tree)
+        
+        try:
+            source = ast.unparse(tree)
+        except:
+            verbose_print("Could not unparse tree")
+            exit()
+        
+        source = source.replace("import tkinter as tk", "import tkinter as tk\n")
+        
+        with open(output_filename, "w", errors="ignore") as f:
+            f.write(source)
 
         verbose_print(output_filename)
         verbose_print("done.")

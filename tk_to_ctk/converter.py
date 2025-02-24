@@ -114,6 +114,53 @@ def change_orient_to_orientation(source_code: str) -> str:
 
     return modified_source_code
 
+def change_frame_borderwidth_to_border_width(source_code: str) -> str:
+    """
+    Change occurrences of the parameter 'borderwidth' to 'border_width' 
+    in function calls and class instantiations.
+    Args:
+        source_code (str): The source code to modify.
+    Returns:
+        str: The modified source code with 'borderwidth' replaced by 'border_width'.
+    """
+
+    class FrameVisitor(ast.NodeTransformer):
+        """AST visitor to modify occurrences of 'borderwidth' to 'border_width'."""
+
+        def visit_Call(self, node: ast.Call) -> ast.Call:
+            """Visit function calls and replace 'borderwidth' keyword argument with 'border_width'."""
+            if isinstance(node.func, ast.Name):
+                if node.keywords:
+                    for keyword in node.keywords:
+                        if (
+                            isinstance(keyword, ast.keyword)
+                            and keyword.arg == "borderwidth"
+                        ):
+                            keyword.arg = "border_width"
+            return node
+
+    tree = parsetree(source_code)
+
+    # Transform the AST with the FrameVisitor
+    transformer = FrameVisitor()
+    transformed_tree = transformer.visit(tree)
+
+    # Convert the AST back to source code
+    modified_source_code = ast.unparse(transformed_tree)
+
+    return modified_source_code
+
+def remove_relief_from_CTkFrame(content: str) -> str:
+
+    tree = parsetree(content)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            string_name = ast.unparse(node.func)
+            if string_name == "ctk.CTkFrame" or string_name == "CTkFrame":
+                remove_parameter_from_call(node, "relief")
+
+    return ast.unparse(tree)  
+
 def remove_resolution_from_ctkslider(content: str) -> str:
     """
     Remove the 'resolution' parameter from calls to ctk.CTkSlider or CTkSlider
@@ -387,11 +434,15 @@ class SourceConverter:
         
         out = "import customtkinter as ctk\nfrom customtkinter import "
         m = len(self.replacer.constants) - 1
+        if m == -1:
+            out = "import customtkinter as ctk\n"
+        
         for index, constant in enumerate(self.replacer.constants):
             if index == m:
                 out += f"{constant}"
             else:
                 out += f"{constant}, "
+                
         out += "\n\n"
 
         script_content = out + script_content
@@ -428,6 +479,14 @@ class SourceConverter:
             source = source
         try:
             source = remove_resolution_from_ctkslider(source)
+        except:
+            source = source
+        try:
+            source = change_frame_borderwidth_to_border_width(source)
+        except:
+            source = source
+        try:
+            source = remove_relief_from_CTkFrame(source)
         except:
             source = source
         return source

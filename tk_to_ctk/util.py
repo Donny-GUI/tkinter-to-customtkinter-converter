@@ -8,6 +8,17 @@ def point(thing: any) -> any:
     ref = thing
     return ref
 
+def parsetree(source: str) -> ast.AST:
+    try:
+        tree = ast.parse(source, type_comments=True)
+        return tree
+    except:
+        tree = ast.parse(source)
+        return tree
+    finally:
+        return ast.parse(source)
+
+
 
 def interface(thing: any) -> any:
     """Create a a copy of the object but reference nested objects"""
@@ -27,6 +38,7 @@ def parsetree(source: str) -> ast.AST:
     except:
         tree = ast.parse(source)
     finally:
+        tree = ast.parse(source)
         return tree
 
 
