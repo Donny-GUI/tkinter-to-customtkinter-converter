@@ -424,19 +424,32 @@ def make_custom_tkinter(
             "orient": "orientation"
 
         }
-        remove_these_keywords = ["relief"]
+        remove_these_keywords = ["relief", "activebackground", "activeforeground", "bd"]
 
 
-        for widget in ctk_widgets:
-            second_name = "ctk." + widget
-            for name, value in fix_these.items():
-                call_argument_changer.add_change(widget, name, value)
-                call_argument_changer.add_change(second_name, name, value)
-
-            for name in remove_these_keywords:
-                call_argument_remover.add_change(widget, name)
-                call_argument_remover.add_change(second_name, name)
+        for widget in tkinter_widgets:
+            # Add both the plain widget name and the qualified name
+            widget_name = f"CTk{widget}" if not widget.startswith("CTk") else widget
+            qualified_name = f"ctk.{widget_name}"
+            print(f"Registering removals for: {widget_name} and {qualified_name}")
+            for param in remove_these_keywords:
+                call_argument_remover.add_keyword_removal(widget_name, param)
+                call_argument_remover.add_keyword_removal(qualified_name, param)
         
+
+        for item in ['orient', 'font', 'length', 'tickinterval', 'sliderlength', 'showvalue', 'bd', 'relief']:
+            call_argument_remover.add_keyword_removal("ctk.CTkSlider", item)
+
+
+        call_argument_remover.add_keyword_removal("ctk.CTkCheckBox", "anchor")
+        call_argument_remover.add_keyword_removal("ctk.CTkCheckBox", "justify")
+        call_argument_remover.add_keyword_removal("ctk.CTkRadioButton", "anchor")
+        call_argument_remover.add_keyword_removal("ctk.CTkRadioButton", "justify")
+
+        call_argument_remover.add_keyword_removal("ctk.CTkEntry", "relief")
+
+        call_argument_changer.add_argument_name_change("tk.Listbox", "bg_color", "bg")
+
         tree = call_argument_changer.visit(tree)
         tree = call_argument_remover.visit(tree)
         
