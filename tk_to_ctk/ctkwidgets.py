@@ -1,10 +1,59 @@
 
+from multiprocessing.spawn import import_main_path
 from optparse import NO_DEFAULT
 from tkinter import NO
 from dataclasses import dataclass
 from enum import Enum, StrEnum
 
-class ctk(StrEnum):
+
+CTkButton            = 'CTkButton'
+CTk                  = 'CTk'
+CTkInputDialog       = 'CTkInputDialog'
+CTkToplevel          = 'CTkToplevel'
+CTkCheckBox          = 'CTkCheckBox'
+CTkComboBox          = 'CTkComboBox'
+CTkEntry             = 'CTkEntry'
+CTkFrame             = 'CTkFrame'
+CTkLabel             = 'CTkLabel'
+CTkOptionMenu        = 'CTkOptionMenu'
+CTkProgressBar       = 'CTkProgressBar'
+CTkRadioButton       = 'CTkRadioButton'
+CTkScrollableFrame   = 'CTkScrollableFrame'
+CTkScrollbar         = 'CTkScrollbar'
+CTkSegmentedButton   = 'CTkSegmentedButton'
+CTkSlider            = 'CTkSlider'
+CTkSwitch            = 'CTkSwitch'
+CTkTabview           = 'CTkTabview'
+CTkFrames            = 'CTkFrames'
+CTkTextbox           = 'CTkTextbox'
+CTkFont              = 'CTkFont'
+CTkImage             = 'CTkImage'
+
+ctk_widget_names = [
+    "CTk",
+    "CTkInputDialog",
+    "CTkToplevel",
+    "CTkButton",
+    "CTkCheckBox",
+    "CTkComboBox",
+    "CTkEntry",
+    "CTkFrame",
+    "CTkLabel",
+    "CTkOptionMenu",
+    "CTkProgressBar",
+    "CTkRadioButton",
+    "CTkScrollableFrame",
+    "CTkScrollbar",
+    "CTkSegmentedButton",
+    "CTkSlider",
+    "CTkSwitch",
+    "CTkTabview",
+    "CTkFrames",
+    "CTkTextbox",
+]
+
+
+class ctk:
     CTkButton            = 'ctk.CTkButton'
     CTk                  = 'ctk.CTk'
     CTkInputDialog       = 'ctk.CTkInputDialog'
@@ -33,80 +82,51 @@ class ctk(StrEnum):
     CTkDoubleVar         = 'ctk.CTkDoubleVar'
     CTkStringVar         = 'ctk.CTkStringVar'
     CTkBooleanVar        = 'ctk.CTkBooleanVar'
+    CTkPhotoImage        = 'ctk.CTkPhotoImage'
 
-    def list_widget_arguments(widget_name:str) -> list[str]:
-        if not widget_name.startswith("ctk."):
-            widget_name = "ctk." + widget_name
 
-        if widget_name in ctk_widget_names:
-            return ctk_widget_arguments[widget_name]
+REMOVE = 333
+
+class CTkWidgets(ctk):
+    def __init__(self):
+        super().__init__()
+        self._ctk_members = [self.CTkButton, self.CTk, self.CTkInputDialog, self.CTkToplevel, self.CTkCheckBox, self.CTkComboBox, self.CTkEntry, self.CTkFrame, self.CTkLabel, self.CTkOptionMenu, self.CTkProgressBar, self.CTkRadioButton, self.CTkScrollableFrame, self.CTkScrollbar, self.CTkSegmentedButton, self.CTkSlider, self.CTkSwitch, self.CTkTabview, self.CTkFrames, self.CTkTextbox, self.CTkFont, self.CTkImage, self.CTkVariable, self.CTkCanvas, self.CTkIntVar, self.CTkDoubleVar, self.CTkStringVar, self.CTkBooleanVar, self.CTkPhotoImage]
+        self._ctk_names = self._ctk_members + ctk_widget_names
+        self._ctk_widgets = ctk_widget_names
+        self._ctk_arguments = ctk_widget_arguments
+        self._tk_arguments = tk_widget_arguments
+        self._tk2ctk_map = tk_widget_to_ctk_widget
+        self._tk_names = tk_widgets
+        self._tk_keywords_to_ctk = {
+            "orient": "orientation",
+            "borderwidth": "border_width",
+            
+        }
+    def match(self, name:str) -> str:
+        if name in self._tk_names:
+            return self._tk2ctk_map[name]
+        else:
+            return name
+        
+    def match_args(self, name:str) -> list[str]:
+        if name in self._ctk_names:
+            return self._ctk_arguments[name]
+        elif name in self._tk_names:
+            return tk_widget_arguments[name]
         else:
             return []
     
-    def get_equivalent_widget(widget_name:str) -> str:
-        if widget_name.startswith("tk.") or widget_name.startswith("ttk."):
-            if widget_name in ctk_widget_names:
-                return tk_widget_to_ctk_widget[widget_name]
-            else:
-                return widget_name
-        else:
-            widget_name = "tk." + widget_name
-            if widget_name in ctk_widget_names:
-                return tk_widget_to_ctk_widget[widget_name]
-            else:
-                widget_name = "ttk." + widget_name.split(".", 1)[1]
-                if widget_name in ctk_widget_names:
-                    return tk_widget_to_ctk_widget[widget_name]
-                else:
-                    return widget_name.split(".", 1)[1]
+    def is_ctk(self, name:str) -> bool:
+        return name in self._ctk_names
     
+    def is_tk(self, name:str) -> bool:
+        return name in self._tk_names
+        
 
-CTkButton            = 'CTkButton'
-CTk                  = 'CTk'
-CTkInputDialog       = 'CTkInputDialog'
-CTkToplevel          = 'CTkToplevel'
-CTkCheckBox          = 'CTkCheckBox'
-CTkComboBox          = 'CTkComboBox'
-CTkEntry             = 'CTkEntry'
-CTkFrame             = 'CTkFrame'
-CTkLabel             = 'CTkLabel'
-CTkOptionMenu        = 'CTkOptionMenu'
-CTkProgressBar       = 'CTkProgressBar'
-CTkRadioButton       = 'CTkRadioButton'
-CTkScrollableFrame   = 'CTkScrollableFrame'
-CTkScrollbar         = 'CTkScrollbar'
-CTkSegmentedButton   = 'CTkSegmentedButton'
-CTkSlider            = 'CTkSlider'
-CTkSwitch            = 'CTkSwitch'
-CTkTabview           = 'CTkTabview'
-CTkFrames            = 'CTkFrames'
-CTkTextbox           = 'CTkTextbox'
-CTkFont              = 'CTkFont'
-CTkImage             = 'CTkImage'
+ctk_qualified_widget_names = ["ctk." + x for x in ctk_widget_names]
 
 
-ctk_widget_names = [
-    "CTk",
-    "CTkInputDialog",
-    "CTkToplevel",
-    "CTkButton",
-    "CTkCheckBox",
-    "CTkComboBox",
-    "CTkEntry",
-    "CTkFrame",
-    "CTkLabel",
-    "CTkOptionMenu",
-    "CTkProgressBar",
-    "CTkRadioButton",
-    "CTkScrollableFrame",
-    "CTkScrollbar",
-    "CTkSegmentedButton",
-    "CTkSlider",
-    "CTkSwitch",
-    "CTkTabview",
-    "CTkFrames",
-    "CTkTextbox",
-]
+
 
 
 tk_widget_arguments = {
@@ -228,9 +248,32 @@ ctk_widget_arguments = {
     "ctk.filedialog.Open":          ["master", "**"],
     "ctk.filedialog.SaveAs":        ["master", "**"],
     "ctk.colorchooser.Chooser":     ["master", "**"],
+    "ctk.CTkVariable":              ["master", "value", "name"],
+    "ctk.CTkVariable":                 ["master", "value", "name"],
+    "ctk.CTkBoolenVar":                ["master", "value", "name"],
+    "ctk.CTkDoubleVar":                ["master", "value", "name"],
+    "ctk.CTkIntVar":                   ["master", "value", "name"],
+    "ctk.CTkStringVar":                ["master", "value", "name"],
+    "ctk.CTkPhotoImage":               ["master", "light_image", "dark_image", "size"],
+    
+}
+
+universal_kw_translation = {
+    "background": "bg_color",
+    "foreground": "fg_color",
+    "fg": "fg_color",
+    "orient": "orientation",
+    "bg": "bg_color",
+    "borderwidth": "border_width",
+    "text_variable": "textvariable",
+    "from": "from_",
+    "labelanchor": "label_anchor"
 }
 
 tk_widget_to_ctk_widget = {
+    "tk.Tk":                        ctk.CTk,
+    "tk.Canvas":                    ctk.CTkCanvas,
+    "tk.ButtonBox":                 ctk.CTkSegmentedButton,
     "tk.Button":                    ctk.CTkButton,
     "tk.Checkbutton":               ctk.CTkCheckBox,
     "tk.Entry":                     ctk.CTkEntry,
@@ -248,16 +291,21 @@ tk_widget_to_ctk_widget = {
     "tk.Text":                      ctk.CTkTextbox,
     "tk.Toplevel":                  ctk.CTkToplevel,
     "tk.Variable":                  ctk.CTkVariable,
-    "tk.BooleanVar":                ctk.CTkVariable,
-    "tk.DoubleVar":                 ctk.CTkVariable,
-    "tk.IntVar":                    ctk.CTkVariable,
-    "tk.StringVar":                 ctk.CTkVariable,
+    "tk.BooleanVar":                ctk.CTkBooleanVar,
+    "tk.DoubleVar":                 ctk.CTkDoubleVar,
+    "tk.IntVar":                    ctk.CTkIntVar,
+    "tk.StringVar":                 ctk.CTkStringVar,
     "tk.BitmapImage":               ctk.CTkImage,
-    "tk.PhotoImage":                ctk.CTkImage,
+    "tk.PhotoImage":                ctk.CTkPhotoImage,
     "tk.font.Font":                 ctk.CTkFont,
     
     "ttk.Button":                    ctk.CTkButton,
+    "ttk.Menubutton":                ctk.CTkButton,
+    "ttk.LabeledScale":              ctk.CTkSlider,
+    "ttk.Labelframe":                ctk.CTkScrollableFrame,
     "ttk.Checkbutton":               ctk.CTkCheckBox,
+    "ttk.Checkbox":                  ctk.CTkCheckBox,
+    "ttk.Combobox":                  ctk.CTkComboBox,
     "ttk.Entry":                     ctk.CTkEntry,
     "ttk.Frame":                     ctk.CTkFrame,
     "ttk.Label":                     ctk.CTkLabel,
@@ -280,9 +328,15 @@ tk_widget_to_ctk_widget = {
     "ttk.BitmapImage":               ctk.CTkImage,
     "ttk.PhotoImage":                ctk.CTkImage,
     "ttk.font.Font":                 ctk.CTkFont,
-    "ttk."
+    "ttk.Notebook":                  ctk.CTkTabview,
 }
 
+def match_tk(tk:str):
+    return tk_widget_to_ctk_widget.get(tk, None)
+
+def replace_tk(tk:str):
+    return tk_widget_to_ctk_widget.get(tk, tk)
+    
 
 tk_widgets = [
     "tk.Tk",
@@ -342,6 +396,7 @@ tk_widgets = [
     "ttk.Sizegrip",
     "ttk.Spinbox",
     "ttk.Treeview",
+    'Tk', 'Button', 'Canvas', 'Checkbutton', 'Entry', 'Frame', 'Label', 'LabelFrame', 'Listbox', 'Menu', 'Menubutton', 'Message', 'OptionMenu', 'Panedwindow', 'Progressbar', 'Radiobutton', 'Scale', 'Scrollbar', 'Separator', 'Spinbox', 'Text', 'Toplevel', 'Treeview', 'Variable', 'BooleanVar', 'DoubleVar', 'IntVar', 'StringVar', 'BitmapImage', 'PhotoImage', 'filedialog.Directory', 'filedialog.Open', 'filedialog.SaveAs', 'colorchooser.Chooser', 'font.Font', 'ttk.Stylettk.Button', 'Checkbutton', 'Combobox', 'Entry', 'Frame', 'Label', 'LabeledScale', 'Labelframe', 'Menubutton', 'Notebook', 'OptionMenu', 'Panedwindow', 'Progressbar', 'Radiobutton', 'Scale', 'Scrollbar', 'Separator', 'Sizegrip', 'Spinbox', 'Treeview',
 ]
 
 tk_available_events = [
@@ -361,7 +416,91 @@ tk_available_events = [
     "<Leave>",
 ]
 
+def test_to_see_by_name_which_ctk_widgets_lose_kws():
+    import json 
+    data = {}
+    for tk_widget, tk_args in tk_widget_arguments.items():
+        ctk_widget = match_tk(tk_widget)
+        if ctk_widget is None:
+            continue
+        data[ctk_widget] = []
+        ctk_args = ctk_widget_arguments[ctk_widget]
+        for arg in tk_args:
+            if arg not in ctk_args:
+                if arg in universal_kw_translation:
+                    continue
+                data[ctk_widget].append(arg)
+    from pprint import pprint 
+    pprint(data)
+                
 
-for widget in ctk_widget_arguments.keys():
-    print(str(widget[4:].ljust(20)) + " = '" + str(widget[4:]) + "'")
+def test_to_find_bisected_keywords():
+
+    def letters_percentage(string:str, string2:str):
+        return len([x for x in string if x in string2]) / len(string)
     
+
+    def normalize(string:str):
+        return string.replace("_", "")
+    
+    for tk_widget, tk_args in tk_widget_arguments.items():
+        
+        ctk_widget = match_tk(tk_widget)
+        if ctk_widget is None:
+            continue
+        ctk_args = ctk_widget_arguments[ctk_widget]
+
+        
+        for arg in tk_args:
+            current_match = ""
+            highest = 0.0
+            for ctk_arg in ctk_args:
+                if arg == ctk_arg:
+                    break
+                percent = letters_percentage(arg, ctk_arg)
+                if percent > highest:
+                    highest = percent
+                    current_match = ctk_arg
+            else:
+                continue
+            print("possible match tk -> ctk: " + arg + " -> " + current_match, highest)    
+
+        norm_tk_args = [normalize(x) for x in tk_args]
+        norm_ctk_args = [normalize(x) for x in ctk_args]
+
+        for index, norm_ctk_arg in enumerate(norm_ctk_args):
+
+            if norm_ctk_arg in norm_tk_args:
+                c = ctk_args[index]
+                n = tk_args[norm_tk_args.index(norm_ctk_arg)]
+                
+                print(ctk_widget + " : " + c + " <- " + n)
+
+
+
+
+
+
+def test_to_see_what_keywords_dont_translate_at_all():
+
+    def letters_percentage(string:str, string2:str):
+        return len([x for x in string if x in string2]) / len(string)
+    
+    ctks = []
+    for ctk_widget, ctk_args in ctk_widget_arguments.items():
+        ctks.extend(ctk_args)
+    ctks = set(ctks)
+
+    percents = []
+    tks = set()
+    for tk_widget, tk_args in tk_widget_arguments.items():
+        for tk_arg in tk_args:
+            if tk_arg not in ctks:
+                if tk_arg in tks:
+                    continue
+                tks.add(tk_arg)
+    
+    for index, tk in enumerate(tks):
+        print(tk)
+    
+
