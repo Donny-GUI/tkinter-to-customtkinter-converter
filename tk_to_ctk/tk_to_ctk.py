@@ -43,6 +43,7 @@ universal_kw_translation = {
     "from": "from_",
     "labelanchor": "label_anchor"
 }
+
 # Keywords that are not translated at all from tkinter to customtkinter
 not_translated_kws = [
     "selectmode", "blockcursor", "format", "sliderlength", "proxyrelief", "showhandle", "activestyle", "fg", "listvariable", "startline", "class", 
