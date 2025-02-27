@@ -27,7 +27,6 @@ from rich.console import Console
 from .widget_replacer import WidgetReplacer
 from .tree import change_orient_to_orientation, change_textvariable_to_variable
 from .app_parser import get_parser
-from .slider import remove_resolution_parameter_for_ctk_slider
 from .util import parsetree
 from .call import CallArgumentNameChanger, CallArgumentRemover
 
