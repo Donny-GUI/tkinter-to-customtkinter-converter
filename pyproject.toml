@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tkinter-to-customtkinter-converter"
+dynamic = ["version"]
+description = "Beta migration assistant for converting tkinter source into reviewable customtkinter code."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Donny GUI" },
+]
+keywords = [
+  "customtkinter",
+  "gui",
+  "migration",
+  "tkinter",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: GNU Affero General Public License v3",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Code Generators",
+  "Topic :: Software Development :: Refactoring",
+]
+dependencies = [
+  "libcst>=1.8,<2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.4,<9",
+]
+
+[project.scripts]
+tk2ctk = "tk_to_ctk.cli:main"
+
+[project.urls]
+Repository = "https://github.com/Donny-GUI/tkinter-to-customtkinter-converter"
+Issues = "https://github.com/Donny-GUI/tkinter-to-customtkinter-converter/issues"
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.packages.find]
+include = ["tk_to_ctk*"]
+
+[tool.setuptools.dynamic]
+version = { attr = "tk_to_ctk._version.__version__" }

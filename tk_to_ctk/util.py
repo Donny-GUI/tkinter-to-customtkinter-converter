@@ -1,63 +1,52 @@
-import platform
+"""Utility helpers retained for compatibility and tests."""
+
+from __future__ import annotations
+
 import ast
 import copy
+import platform
+
+from .listbox_template import LISTBOX_TEMPLATE
 
 
-def point(thing: any) -> any:
-    """Makes a reference to an object"""
-    ref = thing
-    return ref
+def point(thing: object) -> object:
+    """Return the same object reference."""
+
+    return thing
+
+
+def interface(thing: object) -> object:
+    """Create a shallow copy."""
+
+    return copy.copy(thing)
+
+
+def clone(thing: object) -> object:
+    """Create a deep copy."""
+
+    return copy.deepcopy(thing)
+
 
 def parsetree(source: str) -> ast.AST:
+    """Parse source into an AST without swallowing parser behavior."""
+
     try:
-        tree = ast.parse(source, type_comments=True)
-        return tree
-    except:
-        tree = ast.parse(source)
-        return tree
-    finally:
+        return ast.parse(source, type_comments=True)
+    except SyntaxError:
         return ast.parse(source)
 
 
-
-def interface(thing: any) -> any:
-    """Create a a copy of the object but reference nested objects"""
-    replica = copy.copy(thing)
-    return replica
-
-
-def clone(thing: any) -> any:
-    """Create a copy of an object not as a reference"""
-    newthing = copy.deepcopy(thing)
-    return newthing
-
-
-def parsetree(source: str) -> ast.AST:
-    try:
-        tree = ast.parse(source, type_comments=True)
-    except:
-        tree = ast.parse(source)
-    finally:
-        tree = ast.parse(source)
-        return tree
-
-
 def get_operating_system() -> str:
-    """
-    Determine the operating system being used.
+    """Determine the current operating system."""
 
-    Returns:
-        str: A string indicating the operating system. Possible values are "Windows", "Linux", "macOS", or "Unknown".
-    """
-    system: str = platform.system()
+    system = platform.system()
     if system == "Windows":
         return "Windows"
-    elif system == "Linux":
+    if system == "Linux":
         return "Linux"
-    elif system == "Darwin":
+    if system == "Darwin":
         return "macOS"
-    else:
-        return "Unknown"
+    return "Unknown"
 
 
 pip_str = "pip" if get_operating_system() == "Windows" else "pip3"
@@ -65,47 +54,43 @@ python_str = "python" if get_operating_system() == "Windows" else "python3"
 
 
 def classes_begin_index(lines: list[str]) -> int:
+    """Find the insertion point for helper class definitions."""
 
-    # first try to put the CTkListBox as the first Class in the class area
-    count = 0
-    for line in lines:
+    for index, line in enumerate(lines):
         if line.startswith("class "):
-            return count
-        count += 1
+            return index
 
-    # if there is no classes defined in the script. Find the first non import line
-    count = 0
-    for line in lines:
+    for index, line in enumerate(lines):
         if line.startswith("import ") or line.startswith("from "):
-            count += 1
             continue
-        else:
-            return count
+        return index
 
-    return count
+    return len(lines)
 
 
-def get_listbox_source():
-    with open("listbox.py", "r") as file:
-        lines = file.readlines()[1:]
-    return lines
+def get_listbox_source() -> list[str]:
+    """Return the packaged listbox helper as source lines."""
+
+    return [f"{line}\n" for line in LISTBOX_TEMPLATE.splitlines()]
 
 
 def has_listbox(filepath: str) -> bool:
-    with open(filepath, "r") as file:
+    """Detect whether a file contains a tkinter Listbox constructor."""
+
+    with open(filepath, "r", encoding="utf-8") as file:
         content = file.read()
-    try:
-        lbi = content.find("tk.Listbox(")
-        return True
-    except IndexError:
-        return False
+    return "tk.Listbox(" in content or "Listbox(" in content
 
 
 def print_warning(string: str) -> None:
-    print("\033[35m[WARNING]\033[0m:\033[31m" + string + "\033[0m")
+    """Print a warning line."""
+
+    print(f"[WARNING] {string}")
 
 
-def print_update(string: str) -> None:
+def print_update(string: str | list[str]) -> None:
+    """Print an update line."""
+
     if isinstance(string, list):
         string = "[" + ", ".join(string) + "]"
-    print("\033[32m[UPDATE]\033[0m:\033[33m" + string + "\033[0m")
+    print(f"[UPDATE] {string}")
